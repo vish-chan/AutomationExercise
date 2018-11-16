@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [IOS]">
+  <test name="eribank(failed)">
+    <groups>
+      <run>
+        <include name="eribank"/>
+      </run>
+    </groups>
+    <classes>
+      <class name="com.experitest.IOSDemo">
+        <methods>
+          <include name="setUp"/>
+          <include name="setUp"/>
+          <include name="testEribank"/>
+          <include name="tearDown"/>
+          <include name="tearDown"/>
+        </methods>
+      </class> <!-- com.experitest.IOSDemo -->
+    </classes>
+  </test> <!-- eribank(failed) -->
+</suite> <!-- Failed suite [IOS] -->
