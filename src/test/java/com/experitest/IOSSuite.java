@@ -4,8 +4,11 @@ import com.experitest.client.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +20,15 @@ import java.util.Scanner;
  */
 public class IOSSuite implements Runnable {
 
-	private Client client = null;
-	Map<String, List<String>> failures;
+	private CustomClient client = null;
+	Map<String, List<String>> failures = new HashMap<String, List<String>>();
 	String reportsBase;
+	boolean beReleased = false;
 	Map<String, Method> testFuncMap = new HashMap<>();
+	Map<String, String> testAppMap = new HashMap<>();
 	String[] testNames = { "Eribank Login", "Eribank Payment", "ESPN" };
 	String[] methodNames = { "testEribankLogin", "testEribankPayment", "testESPN" };
+	String[] appPaths = { "applications\\eribank.apk", "applications\\eribank.apk" };
 
 	public IOSSuite(String devname, String host, int port, String projectBaseDirectory, String reportsbase) {
 		String test = BaseTest.getTestName();
@@ -30,6 +36,7 @@ public class IOSSuite implements Runnable {
 			if (test.equals("all") || test.equals(testNames[i])) {
 				try {
 					testFuncMap.put(testNames[i], IOSSuite.class.getMethod(methodNames[i]));
+					testAppMap.put(testNames[i], appPaths[i]);
 				} catch (NoSuchMethodException | SecurityException e) {
 					e.printStackTrace();
 				}
@@ -40,16 +47,28 @@ public class IOSSuite implements Runnable {
 
 	public void init(String devname, String host, int port, String projectBaseDirectory, String reportsbase) {
 		System.out.println("Init for device: " + devname);
-		client = new Client(host, port, true);
+		client = new CustomClient(host, port, true);
 		client.setProjectBaseDirectory(projectBaseDirectory);
-		client.setDevice(devname);
-		this.reportsBase = reportsbase;
-		failures = new HashMap<String, List<String>>();
+		if (devname.equals("one")) {
+			devname = client.waitForDevice("@os='ios' AND @added='false'", 30000);
+			beReleased = true;
+			System.out.println("Init for device: " + devname);
+		} else
+			client.setDevice(devname);
+		client.setConnDeviceName(devname);
+		client.openDevice();
+		this.reportsBase = projectBaseDirectory + "\\" + reportsbase + "\\" + devname.replaceAll("\\W", "");
+		try {
+			Files.createDirectories(Paths.get(reportsBase));
+		} catch (IOException e) {
+			System.err.println("Couldn't create directory!");
+		}
 	}
 
 	@Override
 	public void run() {
-		for (String key:testFuncMap.keySet()) {
+		int i=0;
+		for (String key : testFuncMap.keySet()) {
 			Method m = testFuncMap.get(key);
 			client.setReporter("xml", reportsBase, key);
 			try {
@@ -62,6 +81,9 @@ public class IOSSuite implements Runnable {
 				l.add(e.getCause().getMessage());
 				failures.put(key, l);
 				System.out.println(failures.get(key));
+				client.collectSupportData(this.reportsBase+"\\test"+i,
+						BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key), client.getConnDeviceName(), "",
+						"", e.getCause().getMessage());
 				try {
 					m.invoke(this);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -72,6 +94,9 @@ public class IOSSuite implements Runnable {
 					l.add(e.getCause().getMessage());
 					failures.put(key, l);
 					System.out.println(failures.get(key));
+					client.collectSupportData(this.reportsBase+"\\test"+i,
+							BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key), client.getConnDeviceName(), "",
+							"", e.getCause().getMessage());
 					try {
 						client.reboot(150000);
 						m.invoke(this);
@@ -83,21 +108,22 @@ public class IOSSuite implements Runnable {
 						l.add(e.getCause().getMessage());
 						failures.put(key, l);
 						System.out.println(failures.get(key));
+						client.collectSupportData(this.reportsBase+"\\test"+i,
+								BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key), client.getConnDeviceName(), "",
+								"", e.getCause().getMessage());
 					}
 				}
 			}
 			client.generateReport(false);
+			i++;
 		}
 		tearDown();
 	}
 
 	public void testEribankLogin() throws InternalException {
-		try {
-			client.launch("com.experitest.ExperiBank", true, true);
-		} catch (InternalException e) {
-			client.install("com.experitest.ExperiBank", true, false);
-			client.launch("com.experitest.ExperiBank", true, true);
-		}
+		client.customInstallInstrumented("com.experitest.ExperiBank");
+		client.launch("com.experitest.ExperiBank", true, true);
+
 		String csvUserName = null;
 		String csvPassword = null;
 		Scanner inputStream = null;
@@ -128,12 +154,9 @@ public class IOSSuite implements Runnable {
 	}
 
 	public void testEribankPayment() throws InternalException {
-		try {
-			client.launch("com.experitest.ExperiBank", true, true);
-		} catch (InternalException e) {
-			client.install("com.experitest.ExperiBank", true, false);
-			client.launch("com.experitest.ExperiBank", true, true);
-		}
+		client.customInstallInstrumented("com.experitest.ExperiBank");	
+		client.launch("com.experitest.ExperiBank", true, true);
+
 		client.elementSendText("NATIVE", "xpath=//*[@placeholder='Username']", 0, "company");
 		client.elementSendText("NATIVE", "xpath=//*[@placeholder='Password']", 0, "company");
 		client.click("NATIVE", "xpath=//*[@text='Login']", 0, 1);
@@ -168,26 +191,22 @@ public class IOSSuite implements Runnable {
 			client.report("Not able to parse final balance correctly, string received: " + str1, false);
 		}
 
-		client.report("Balance check result", (double) final_balance == (double) (initial_balance - amount));
+		if((double) final_balance == (double) (initial_balance - amount))
+			client.report("Balance check result correct", true);
+		else {
+			client.report("Balance check result incorrect", false);
+			throw new InternalException(null, "Wrong balance", null);
+		}
 	}
 
 	public void testESPN() throws InternalException {
-		try {
-			if (!client.getNetworkConnection("wifi"))
-				try {
-					client.setNetworkConnection("wifi", true);
-				} catch (InternalException e) {
-					client.report("Wifi not set, cannot change Wifi state", false);
-				}
-		} catch (InternalException e) {
-			client.report("Cannot check Wifi state", false);
-		}
+		client.customSetNetworkConnection("wifi");
 		client.launch("safari:http://www.espn.com", true, false);
 		if (client.waitForElement("WEB", "id=global-nav-mobile-trigger", 0, 10000))
 			client.click("WEB", "id=global-nav-mobile-trigger", 0, 1);
 		String[] menuitems = { "Sports", "ESPN+", "Watch", "Listen", "Fantasy", "More" };
 		for (String s : menuitems) {
-			if (client.waitForElement("WEB", "text=" + s, 0, 5000))
+			if (client.waitForElement("WEB", "text=" + s, 0, 10000))
 				client.click("WEB", "text=" + s, 0, 1);
 			else
 				client.report("Element not found: " + s, false);
@@ -195,6 +214,9 @@ public class IOSSuite implements Runnable {
 	}
 
 	public void tearDown() {
+		client.closeDevice();
+		if (beReleased)
+			client.releaseDevice("", false, true, true);
 		client.releaseClient();
 	}
 }

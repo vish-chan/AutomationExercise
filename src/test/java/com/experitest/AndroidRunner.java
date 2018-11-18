@@ -13,9 +13,9 @@ import org.junit.Test;
 
 import com.experitest.client.Client;
 
-public class AndroidRunner extends BaseTest{
+public class AndroidRunner extends BaseTest {
 
-	Client client  = null;
+	Client client = null;
 
 	@Before
 	public void setUp() {
@@ -25,23 +25,29 @@ public class AndroidRunner extends BaseTest{
 
 	@Test
 	public void test() {
-		String conn_dev = client.getConnectedDevices();
-		String[] devices = conn_dev.split("\n");
-		List<String> android_devices = new ArrayList<>();
-		for(int i=0;i<devices.length;i++) {
-			if(devices[i].contains("adb:")) {
-				android_devices.add(devices[i]);
-			}
-		}		
-		System.out.println("Total android devices found: "+android_devices.size());
-		ExecutorService es = Executors.newCachedThreadPool();
 		String device = BaseTest.getDeviceName();
-		for(String android_device:android_devices) {
-			if(device.equals("all") || device.equals(android_device)) {
-				System.out.println("Starting test for device "+device);
-				AndroidSuite as = new AndroidSuite(android_device, BaseTest.getHost(), BaseTest.getPort(), BaseTest.getProjectbasedirectory(), BaseTest.getReportsbase());
+		ExecutorService es = Executors.newCachedThreadPool();
+		if (device.equals("all")) {
+			String conn_dev = client.getConnectedDevices();
+			String[] devices = conn_dev.split("\n");
+			List<String> android_devices = new ArrayList<>();
+			for (int i = 0; i < devices.length; i++) {
+				if (devices[i].contains("adb:")) {
+					android_devices.add(devices[i]);
+				}
+			}
+			System.out.println("Total android devices found: " + android_devices.size());
+			for (String android_device : android_devices) {
+				System.out.println("Starting test for device " + device);
+				AndroidSuite as = new AndroidSuite(android_device, BaseTest.getHost(), BaseTest.getPort(),
+						BaseTest.getProjectbasedirectory(), BaseTest.getReportsbase());
 				es.execute(as);
 			}
+		} else {
+			System.out.println("Starting test for device " + device);
+			AndroidSuite as = new AndroidSuite(device, BaseTest.getHost(), BaseTest.getPort(),
+					BaseTest.getProjectbasedirectory(), BaseTest.getReportsbase());
+			es.execute(as);
 		}
 		try {
 			es.awaitTermination(30, TimeUnit.MINUTES);
@@ -50,5 +56,4 @@ public class AndroidRunner extends BaseTest{
 			e.printStackTrace();
 		}
 	}
-
 }

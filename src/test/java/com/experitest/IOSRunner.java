@@ -25,24 +25,31 @@ public class IOSRunner extends BaseTest {
 
 	@Test
 	public void test() {
-		String conn_dev = client.getConnectedDevices();
-		String[] devices = conn_dev.split("\n");
-		List<String> ios_devices = new ArrayList<>();
-		for (int i = 0; i < devices.length; i++) {
-			if (devices[i].contains("ios_app:")) {
-				ios_devices.add(devices[i]);
-			}
-		}
-		System.out.println("Total IOS devices found: " + ios_devices.size());
 		String device = BaseTest.getDeviceName();
 		ExecutorService es = Executors.newCachedThreadPool();
-		for (String ios_device : ios_devices) {
-			if (device.equals("all") || device.equals(ios_device)) {
+		if (device.equals("all")) {
+			String conn_dev = client.getConnectedDevices();
+			String[] devices = conn_dev.split("\n");
+			List<String> ios_devices = new ArrayList<>();
+			for (int i = 0; i < devices.length; i++) {
+				if (devices[i].contains("ios_app:")) {
+					ios_devices.add(devices[i]);
+				}
+			}
+			System.out.println("Total IOS devices found: " + ios_devices.size());
+			for (String ios_device : ios_devices) {
+
 				System.out.println("Starting test for device " + device);
 				IOSSuite ios = new IOSSuite(ios_device, BaseTest.getHost(), BaseTest.getPort(),
 						BaseTest.getProjectbasedirectory(), BaseTest.getReportsbase());
 				es.execute(ios);
+
 			}
+		} else {
+			System.out.println("Starting test for device " + device);
+			IOSSuite ios = new IOSSuite(device, BaseTest.getHost(), BaseTest.getPort(),
+					BaseTest.getProjectbasedirectory(), BaseTest.getReportsbase());
+			es.execute(ios);
 		}
 		try {
 			es.awaitTermination(20, TimeUnit.MINUTES);

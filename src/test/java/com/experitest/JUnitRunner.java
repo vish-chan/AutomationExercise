@@ -38,9 +38,9 @@ public class JUnitRunner {
 		}
 		
 		if(result.wasSuccessful())
-			System.out.println("All tests successful.");
+			System.out.println("All tests successfuly executed.");
 		else {
-			System.out.println("Some tests failed!");
+			System.out.println("Some tests failed to execute!");
 		}
 	}
 }
