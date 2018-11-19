@@ -50,7 +50,13 @@ public class AndroidRunner extends BaseTest {
 			es.execute(as);
 		}
 		try {
-			es.awaitTermination(30, TimeUnit.MINUTES);
+			es.shutdown();
+			long duration = BaseTest.getTestDuration();
+			if(duration<0)
+				duration = 30;
+			else
+				duration = duration+10;
+			es.awaitTermination(duration, TimeUnit.MINUTES);
 		} catch (InterruptedException e) {
 			fail("Some threads couldn't complete execution");
 			e.printStackTrace();

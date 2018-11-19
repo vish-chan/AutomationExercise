@@ -21,14 +21,14 @@ import java.util.Scanner;
 public class IOSSuite implements Runnable {
 
 	private CustomClient client = null;
-	Map<String, List<String>> failures = new HashMap<String, List<String>>();
+	Map<String, List<String>> failuresMap = new HashMap<String, List<String>>();
 	String reportsBase;
 	boolean beReleased = false;
 	Map<String, Method> testFuncMap = new HashMap<>();
 	Map<String, String> testAppMap = new HashMap<>();
 	String[] testNames = { "Eribank Login", "Eribank Payment", "ESPN" };
 	String[] methodNames = { "testEribankLogin", "testEribankPayment", "testESPN" };
-	String[] appPaths = { "applications\\eribank.apk", "applications\\eribank.apk" };
+	String[] appPaths = { "applications\\eribank.apk", "applications\\eribank.apk", null };
 
 	public IOSSuite(String devname, String host, int port, String projectBaseDirectory, String reportsbase) {
 		String test = BaseTest.getTestName();
@@ -49,7 +49,7 @@ public class IOSSuite implements Runnable {
 		System.out.println("Init for device: " + devname);
 		client = new CustomClient(host, port, true);
 		client.setProjectBaseDirectory(projectBaseDirectory);
-		if (devname.equals("one")) {
+		if (devname.equals("cloud")) {
 			devname = client.waitForDevice("@os='ios' AND @added='false'", 30000);
 			beReleased = true;
 			System.out.println("Init for device: " + devname);
@@ -57,7 +57,7 @@ public class IOSSuite implements Runnable {
 			client.setDevice(devname);
 		client.setConnDeviceName(devname);
 		client.openDevice();
-		this.reportsBase = projectBaseDirectory + "\\" + reportsbase + "\\" + devname.replaceAll("\\W", "");
+		this.reportsBase = projectBaseDirectory + "\\" + reportsbase + "\\" + devname.replaceAll("\\W", "_");
 		try {
 			Files.createDirectories(Paths.get(reportsBase));
 		} catch (IOException e) {
@@ -67,66 +67,80 @@ public class IOSSuite implements Runnable {
 
 	@Override
 	public void run() {
-		int i=0;
-		for (String key : testFuncMap.keySet()) {
-			Method m = testFuncMap.get(key);
-			client.setReporter("xml", reportsBase, key);
-			try {
-				m.invoke(this);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-					| InternalException e) {
-				List<String> l = failures.get(key);
-				if (l == null)
-					l = new ArrayList<>();
-				l.add(e.getCause().getMessage());
-				failures.put(key, l);
-				System.out.println(failures.get(key));
-				client.collectSupportData(this.reportsBase+"\\test"+i,
-						BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key), client.getConnDeviceName(), "",
-						"", e.getCause().getMessage());
+		long test_duration = BaseTest.getTestDuration() * 60 * 1000;
+		int i = 0, run = 1;
+		while (true) {
+			long start_time = System.currentTimeMillis();
+			for (String key : testFuncMap.keySet()) {
+				Method m = testFuncMap.get(key);
+				client.setReporter("xml", reportsBase, key);
 				try {
 					m.invoke(this);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-						| InternalException e2) {
-					l = failures.get(key);
-					if (l == null)
-						l = new ArrayList<>();
+						| InternalException e) {
+					List<String> l = new ArrayList<>();
 					l.add(e.getCause().getMessage());
-					failures.put(key, l);
-					System.out.println(failures.get(key));
-					client.collectSupportData(this.reportsBase+"\\test"+i,
-							BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key), client.getConnDeviceName(), "",
-							"", e.getCause().getMessage());
+					failuresMap.put(key, l);
+					System.out.println(failuresMap.get(key));
+					/*
+					 * client.collectSupportData(this.reportsBase+"\\test"+i,
+					 * BaseTest.getProjectbasedirectory() +
+					 * "\\" + testAppMap.get(key), client.getConnDeviceName(), "", "",
+					 * e.getCause().getMessage());
+					 */
 					try {
-						client.reboot(150000);
 						m.invoke(this);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-							| InternalException e3) {
-						l = failures.get(key);
-						if (l == null)
-							l = new ArrayList<>();
+							| InternalException e2) {
+						l = failuresMap.get(key);
 						l.add(e.getCause().getMessage());
-						failures.put(key, l);
-						System.out.println(failures.get(key));
-						client.collectSupportData(this.reportsBase+"\\test"+i,
-								BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key), client.getConnDeviceName(), "",
-								"", e.getCause().getMessage());
+						failuresMap.put(key, l);
+						System.out.println(failuresMap.get(key));
+						/*
+						 * client.collectSupportData(this.reportsBase+"\\test"+i,
+						 * BaseTest.getProjectbasedirectory() +
+						 * "\\" + testAppMap.get(key), client.getConnDeviceName(), "", "",
+						 * e.getCause().getMessage());
+						 */
+						try {
+							// client.reboot(150000);
+							m.invoke(this);
+						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+								| InternalException e3) {
+							l = failuresMap.get(key);
+							l.add(e.getCause().getMessage());
+							failuresMap.put(key, l);
+							System.out.println(failuresMap.get(key));
+							/*
+							 * client.collectSupportData(this.reportsBase+"\\test"+i,
+							 * BaseTest.getProjectbasedirectory() +
+							 * "\\" + testAppMap.get(key), client.getConnDeviceName(), "", "",
+							 * e.getCause().getMessage());
+							 */
+						}
 					}
 				}
+				client.generateReport(false);
+				i++;
 			}
-			client.generateReport(false);
-			i++;
+			sendReportSummary(run);
+			long end_time = System.currentTimeMillis();
+			test_duration = test_duration - (end_time - start_time);
+			if (test_duration <= 0)
+				break;
+			run++;
 		}
 		tearDown();
 	}
 
 	public void testEribankLogin() throws InternalException {
-		client.customInstallInstrumented("com.experitest.ExperiBank");
-		client.launch("com.experitest.ExperiBank", true, true);
+		client.customLaunchInstrument("com.experitest.ExperiBank");
 
 		String csvUserName = null;
 		String csvPassword = null;
 		Scanner inputStream = null;
+		String finalMessage = null;
+		boolean failure = false;
 		try {
 			inputStream = new Scanner(new File("users.csv"));
 		} catch (FileNotFoundException e) {
@@ -144,18 +158,32 @@ public class IOSSuite implements Runnable {
 			client.elementSendText("NATIVE", "xpath=//*[@placeholder='Username']", 0, csvUserName);
 			client.elementSendText("NATIVE", "xpath=//*[@placeholder='Password']", 0, csvPassword);
 			client.click("NATIVE", "xpath=//*[@text='Login']", 0, 1);
-			if (client.isElementFound("NATIVE", "xpath=//*[@text='Invalid username or password!']", 0))
+			if (client.isElementFound("NATIVE", "xpath=//*[@text='Invalid username or password!']", 0)) {
+				if ((csvUserName.equals("company") && csvPassword.equals("company"))) {
+					finalMessage = "Unable to login for username-password: " + csvUserName + "-" + csvPassword;
+					failure = true;
+					break;
+				}
 				client.click("NATIVE", "xpath=//*[@text='Dismiss']", 0, 1);
-			else
+			} else if (client.isElementFound("NATIVE", "text=Make Payment", 0)) {
+				if (!(csvUserName.equals("company") && csvPassword.equals("company"))) {
+					finalMessage = "Wrong login for username-password: " + csvUserName + "-" + csvPassword;
+					failure = true;
+				}
+				break;
+			} else
 				break;
 		}
 		if (inputStream != null)
 			inputStream.close();
+		if (failure) {
+			client.report(finalMessage, false);
+			throw new InternalException(null, finalMessage, null);
+		}
 	}
 
 	public void testEribankPayment() throws InternalException {
-		client.customInstallInstrumented("com.experitest.ExperiBank");	
-		client.launch("com.experitest.ExperiBank", true, true);
+		client.customLaunchInstrument("com.experitest.ExperiBank");
 
 		client.elementSendText("NATIVE", "xpath=//*[@placeholder='Username']", 0, "company");
 		client.elementSendText("NATIVE", "xpath=//*[@placeholder='Password']", 0, "company");
@@ -163,13 +191,13 @@ public class IOSSuite implements Runnable {
 
 		client.waitForElement("NATIVE", "xpath=//*[@text='Make Payment']", 0, 5000);
 
-		String str0 = client.getTextIn("NATIVE", "xpath=//*[@text='Make Payment']", 0, "TEXT", "Up", 0, 150);
-		str0 = str0.trim();
+		String initial_balance_str = client.getTextIn("NATIVE", "xpath=//*[@text='Make Payment']", 0, "TEXT", "Up", 0,
+				150);
 		Double initial_balance = 0D;
 		try {
-			initial_balance = Double.parseDouble(str0.substring(0, str0.length() - 1));
-		} catch (NumberFormatException e) {
-			client.report("Not able to parse initial balance correctly, string received: " + str0, false);
+			initial_balance = client.getPaymentFromString(initial_balance_str);
+		} catch (InternalException e) {
+			client.report(e.getMessage(), false);
 		}
 		client.click("NATIVE", "xpath=//*[@text='Make Payment']", 0, 1);
 		client.elementSendText("NATIVE", "xpath=//*[@placeholder='Phone']", 0, "99999999");
@@ -182,16 +210,16 @@ public class IOSSuite implements Runnable {
 		client.click("NATIVE", "xpath=//*[@text='Send Payment']", 0, 1);
 		client.click("NATIVE", "xpath=//*[@text='Yes']", 0, 1);
 
-		String str1 = client.getTextIn("NATIVE", "xpath=//*[@text='Make Payment']", 0, "TEXT", "Up", 0, 150);
-		str1 = str1.trim();
+		String final_balance_str = client.getTextIn("NATIVE", "xpath=//*[@text='Make Payment']", 0, "TEXT", "Up", 0,
+				150);
 		Double final_balance = 0D;
 		try {
-			final_balance = Double.parseDouble(str1.substring(0, str1.length() - 1));
-		} catch (NumberFormatException e) {
-			client.report("Not able to parse final balance correctly, string received: " + str1, false);
+			final_balance = client.getPaymentFromString(final_balance_str);
+		} catch (InternalException e) {
+			client.report(e.getMessage(), false);
 		}
 
-		if((double) final_balance == (double) (initial_balance - amount))
+		if ((double) final_balance == (double) (initial_balance - amount))
 			client.report("Balance check result correct", true);
 		else {
 			client.report("Balance check result incorrect", false);
@@ -202,15 +230,28 @@ public class IOSSuite implements Runnable {
 	public void testESPN() throws InternalException {
 		client.customSetNetworkConnection("wifi");
 		client.launch("safari:http://www.espn.com", true, false);
-		if (client.waitForElement("WEB", "id=global-nav-mobile-trigger", 0, 10000))
-			client.click("WEB", "id=global-nav-mobile-trigger", 0, 1);
+		client.waitForElement("WEB", "id=global-nav-mobile-trigger", 0, 10000);
+		client.click("WEB", "id=global-nav-mobile-trigger", 0, 1);
 		String[] menuitems = { "Sports", "ESPN+", "Watch", "Listen", "Fantasy", "More" };
-		for (String s : menuitems) {
-			if (client.waitForElement("WEB", "text=" + s, 0, 10000))
-				client.click("WEB", "text=" + s, 0, 1);
-			else
-				client.report("Element not found: " + s, false);
+		StringBuilder failures = new StringBuilder();
+		boolean failed = false;
+		for (String menuitem : menuitems) {
+			if (client.waitForElement("WEB", "text=" + menuitem, 0, 10000))
+				client.click("WEB", "text=" + menuitem, 0, 1);
+			else {
+				client.report("Element not found: " + menuitem, false);
+				failed = true;
+				failures.append(menuitem + ",");
+			}
 		}
+		if (failed)
+			throw new InternalException(null, "Following elements not found: " + failures.toString(), null);
+	}
+
+	public void sendReportSummary(int run) {
+		FinalReporter finalReporter = FinalReporter.getInstance();
+		finalReporter.addRow(run, client.getConnDeviceName(), client.getDeviceProperty("device.sn"), testFuncMap.size(),
+				failuresMap);
 	}
 
 	public void tearDown() {

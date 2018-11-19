@@ -1,5 +1,8 @@
 package com.experitest;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.experitest.client.Client;
 import com.experitest.client.InternalException;
 
@@ -21,48 +24,72 @@ public class CustomClient extends Client {
 	public CustomClient(String host, int port, boolean useSessionID) {
 		super(host, port, useSessionID);
 	}
-	
-	public void customClick(String zone, String element, int index, int clickCount, String zipDestination, String applicationPath) {
+
+	public void customClick(String zone, String element, int index, int clickCount, String zipDestination,
+			String applicationPath) {
 		try {
 			super.click(zone, element, index, clickCount);
 		} catch (InternalException e) {
-			super.collectSupportData(zipDestination, applicationPath, connDeviceName, "click error", "click to work", e.getMessage());
+			super.collectSupportData(zipDestination, applicationPath, connDeviceName, "click error", "click to work",
+					e.getMessage());
 		}
 	}
-	
-	public void customElementSendText(String zone, String element, int index, String text, String zipDestination, String applicationPath ) {
+
+	public void customElementSendText(String zone, String element, int index, String text, String zipDestination,
+			String applicationPath) {
 		try {
 			super.elementSendText(zone, element, index, text);
 		} catch (InternalException e) {
-			super.collectSupportData(zipDestination, applicationPath, connDeviceName, "send text error", "send text experted to work", e.getMessage());
+			super.collectSupportData(zipDestination, applicationPath, connDeviceName, "send text error",
+					"send text experted to work", e.getMessage());
 		}
 	}
-	
+
 	public void customInstallInstrumented(String app) {
 		try {
-			super.install("com.experitest.ExperiBank/.LoginActivity", true, true);
+			super.install(app, true, true);
 		} catch (InternalException e) {
-			super.install("com.experitest.ExperiBank/.LoginActivity", true, false);
-		}
-	} 
-	
-	public void customInstallUninstrumented(String app) {
-		try {
-			super.install("com.experitest.ExperiBank/.LoginActivity", true, true);
-		} catch (InternalException e) {
-			super.install("com.experitest.ExperiBank/.LoginActivity", true, false);
+			try {
+				super.install(app, true, false);
+			} catch (InternalException e2) {
+				System.err.println("Unable to install app instrumented");
+			}
 		}
 	}
-	
-	public boolean customWaitForElement(String zone, String element, int index, int timeout, String zipDestination, String applicationPath ) {
+
+	public void customInstallUninstrumented(String app) {
+		try {
+			super.install(app, false, true);
+		} catch (InternalException e) {
+			try {
+				super.install(app, true, false);
+			} catch (InternalException e2) {
+				System.err.println("Unable to install app uninstrumented");
+			}
+		}
+	}
+
+	public void customLaunchInstrument(String app) {
+		try {
+			super.launch(app, true, true);
+		} catch (InternalException e) {
+			System.err.println("Unable to launch app instrumented, reinstalling and trying again.");
+			customInstallInstrumented(app);
+			super.launch(app, true, true);
+		}
+	}
+
+	public boolean customWaitForElement(String zone, String element, int index, int timeout, String zipDestination,
+			String applicationPath) {
 		try {
 			return super.waitForElement(zone, element, index, timeout);
 		} catch (InternalException e) {
-			super.collectSupportData(zipDestination, applicationPath, connDeviceName, "waitForElement error", "element expected to appear", e.getMessage());
+			super.collectSupportData(zipDestination, applicationPath, connDeviceName, "waitForElement error",
+					"element expected to appear", e.getMessage());
 			return false;
 		}
 	}
-	
+
 	public void customSetNetworkConnection(String connection) {
 		try {
 			if (!super.getNetworkConnection(connection))
@@ -75,6 +102,31 @@ public class CustomClient extends Client {
 			super.report("Cannot check Wifi state", false);
 		}
 	}
-	
-	
+
+	public double getPaymentFromString(String s) {
+		String regex = "[\\s]*[-]?[0-9oO]+\\.[0-9oO]+\\$";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(s);
+		double d = 0d;
+		boolean fail = false;
+		if (m.find()) {
+			if (m.group() != null && !(m.group()).equals("")) {
+				String match = m.group();
+				match = match.trim();
+				match = match.replaceAll("[oO]", "0");
+				match = match.replaceAll("\\$", "");
+				try {
+					d = Double.parseDouble(match);
+				} catch (NumberFormatException e) {
+					fail = true;
+				}
+			}
+		} else {
+			fail = true;
+		}
+		if (fail)
+			throw new InternalException(null, "Unable to parse double from string "+s, null);
+		return d;
+	}
+
 }

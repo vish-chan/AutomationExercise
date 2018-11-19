@@ -33,14 +33,17 @@ public class JUnitRunner {
 			classes[i] = class_list.get(i);
 		JUnitCore jc = new JUnitCore();
 		Result result = jc.run(new ParallelComputer(true, false), classes);
+		
 		for(Failure f:result.getFailures()) {
 			System.out.println(f.getMessage());
 		}
 		
+		FinalReporter finalReporter = FinalReporter.getInstance();
+		finalReporter.printFinalTable();
+		
 		if(result.wasSuccessful())
 			System.out.println("All tests successfuly executed.");
-		else {
+		else
 			System.out.println("Some tests failed to execute!");
-		}
 	}
 }

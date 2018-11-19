@@ -21,16 +21,16 @@ import com.experitest.client.InternalException;
 public class AndroidSuite implements Runnable {
 
 	private CustomClient client = null;
-	Map<String, List<String>> failures = new HashMap<String, List<String>>();
 	String reportsBase;
 	boolean beReleased = false;
 	Map<String, Method> testFuncMap = new HashMap<>();
 	Map<String, String> testAppMap = new HashMap<>();
+	Map<String, List<String>> failuresMap = new HashMap<String, List<String>>();
 	String[] testNames = { "Eribank Login", "Eribank Payment", "TouchMeNot Login", "TouchMeNot Play", "ESPN" };
 	String[] methodNames = { "testEribankLogin", "testEribankPayment", "testTouchMeNotLogin", "testTouchMeNotPlay",
 			"testESPN" };
 	String[] appPaths = { "applications\\eribank.apk", "applications\\eribank.apk", "applications\\TouchMeNot.apk",
-			"applications\\TouchMeNot.apk" };
+			"applications\\TouchMeNot.apk", null };
 
 	public AndroidSuite(String devname, String host, int port, String projectBaseDirectory, String reportsBase) {
 		String test = BaseTest.getTestName();
@@ -51,7 +51,7 @@ public class AndroidSuite implements Runnable {
 		System.out.println("Init for device: " + devname);
 		client = new CustomClient(host, port, true);
 		client.setProjectBaseDirectory(projectBaseDirectory);
-		if (devname.equals("one")) {
+		if (devname.equals("cloud")) {
 			devname = client.waitForDevice("@os='android' AND @added='false'", 30000);
 			beReleased = true;
 			System.out.println("Init for device: " + devname);
@@ -60,7 +60,7 @@ public class AndroidSuite implements Runnable {
 		}
 		client.setConnDeviceName(devname);
 		client.openDevice();
-		this.reportsBase = projectBaseDirectory + "\\" + reportsbase + "\\" + devname.replaceAll("\\W", "");
+		this.reportsBase = projectBaseDirectory + "\\" + reportsbase + "\\" + devname.replaceAll("\\W", "_");
 		try {
 			Files.createDirectories(Paths.get(reportsBase));
 		} catch (IOException e) {
@@ -70,62 +70,74 @@ public class AndroidSuite implements Runnable {
 
 	@Override
 	public void run() {
-		int i=0;
-		for (String key : testFuncMap.keySet()) {
-			Method m = testFuncMap.get(key);
-			client.setReporter("xml", reportsBase, key);
-			try {
-				m.invoke(this);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-					| InternalException e) {
-				List<String> l = failures.get(key);
-				if (l == null)
-					l = new ArrayList<>();
-				l.add(e.getCause().getMessage());
-				failures.put(key, l);
-				System.out.println(failures.get(key));
-				client.collectSupportData(this.reportsBase+"\\test"+i,
-						BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key), client.getConnDeviceName(), "",
-						"", e.getCause().getMessage());
+		long test_duration = BaseTest.getTestDuration()*60*1000;
+		int i = 0, run=1;
+		while (true) {
+			long start_time = System.currentTimeMillis();
+			for (String key : testFuncMap.keySet()) {
+				Method m = testFuncMap.get(key);
+				client.setReporter("xml", reportsBase, key);
 				try {
 					m.invoke(this);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-						| InternalException e2) {
-					l = failures.get(key);
-					if (l == null)
-						l = new ArrayList<>();
+						| InternalException e) {
+					List<String> l = new ArrayList<>();
 					l.add(e.getCause().getMessage());
-					failures.put(key, l);
-					System.out.println(failures.get(key));
-					client.collectSupportData(this.reportsBase+"\\test"+i,
-							BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key), client.getConnDeviceName(),
-							"", "", e.getCause().getMessage());
+					failuresMap.put(key, l);
+					System.out.println(failuresMap.get(key));
+					/*
+					 * client.collectSupportData(this.reportsBase+"\\test"+i,
+					 * BaseTest.getProjectbasedirectory() +
+					 * "\\" + testAppMap.get(key), client.getConnDeviceName(), "", "",
+					 * e.getCause().getMessage());
+					 */
 					try {
-						client.reboot(150000);
 						m.invoke(this);
 					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-							| InternalException e3) {
-						l = failures.get(key);
-						if (l == null)
-							l = new ArrayList<>();
+							| InternalException e2) {
+						l = failuresMap.get(key);
 						l.add(e.getCause().getMessage());
-						failures.put(key, l);
-						System.out.println(failures.get(key));
-						client.collectSupportData(this.reportsBase+"\\test"+i,
-								BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key),
-								client.getConnDeviceName(), "", "", e.getCause().getMessage());
+						failuresMap.put(key, l);
+						System.out.println(failuresMap.get(key));
+						/*
+						 * client.collectSupportData(this.reportsBase+"\\test"+i,
+						 * BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key),
+						 * client.getConnDeviceName(), "", "", e.getCause().getMessage());
+						 */
+						try {
+							// client.reboot(150000);
+							m.invoke(this);
+						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+								| InternalException e3) {
+							l = failuresMap.get(key);
+							l.add(e.getCause().getMessage());
+							failuresMap.put(key, l);
+							System.out.println(failuresMap.get(key));
+							/*
+							 * client.collectSupportData(this.reportsBase+"\\test"+i,
+							 * BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key),
+							 * client.getConnDeviceName(), "", "", e.getCause().getMessage());
+							 */
+						}
 					}
 				}
+				client.generateReport(false);
+				i++;
 			}
-			client.generateReport(false);
-			i++;
+			sendReportSummary(run);
+			long end_time = System.currentTimeMillis();
+			test_duration = test_duration - (end_time-start_time);
+			if(test_duration <= 0)
+				break;
+			run++;
 		}
+		
 		tearDown();
 	}
 
 	public void testEribankLogin() throws InternalException {
-		client.customInstallInstrumented("com.experitest.ExperiBank/.LoginActivity");
-		client.launch("com.experitest.ExperiBank/.LoginActivity", true, true);
+		// client.customInstallInstrumented("com.experitest.ExperiBank/.LoginActivity");
+		client.customLaunchInstrument("com.experitest.ExperiBank/.LoginActivity");
 		String csvUserName = null;
 		String csvPassword = null;
 		Scanner inputStream = null;
@@ -173,20 +185,18 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testEribankPayment() throws InternalException {
-		client.customInstallInstrumented("com.experitest.ExperiBank/.LoginActivity");
-		client.launch("com.experitest.ExperiBank/.LoginActivity", true, true);
+		client.customLaunchInstrument("com.experitest.ExperiBank/.LoginActivity");
 		client.elementSendText("NATIVE", "hint=Username", 0, "company");
 		client.elementSendText("NATIVE", "hint=Password", 0, "company");
 		client.click("NATIVE", "text=Login", 0, 1);
 		client.waitForElement("NATIVE", "text=Make Payment", 0, 5000);
 
-		String str0 = client.getTextIn("NATIVE", "text=Make Payment", 0, "TEXT", "Up", 0, 200);
+		String initial_balance_str = client.getTextIn("NATIVE", "text=Make Payment", 0, "TEXT", "Up", 0, 200);
 		Double initial_balance = 0D;
 		try {
-			str0 = str0.trim();
-			initial_balance = Double.parseDouble(str0.substring(0, str0.length() - 1));
-		} catch (NumberFormatException | NullPointerException e) {
-			client.report("Not able to parse initial balance correctly, string received: " + str0, false);
+			initial_balance = client.getPaymentFromString(initial_balance_str);
+		} catch (InternalException e) {
+			client.report(e.getMessage(), false);
 		}
 		client.click("NATIVE", "text=Make Payment", 0, 1);
 		client.elementSendText("NATIVE", "hint=Phone", 0, "99999999");
@@ -199,13 +209,12 @@ public class AndroidSuite implements Runnable {
 		client.click("NATIVE", "text=Send Payment", 0, 1);
 		client.click("NATIVE", "text=Yes", 0, 1);
 
-		String str1 = client.getTextIn("NATIVE", "text=Make Payment", 0, "TEXT", "Up", 0, 200);
+		String final_balance_str = client.getTextIn("NATIVE", "text=Make Payment", 0, "TEXT", "Up", 0, 200);
 		Double final_balance = 0D;
 		try {
-			str1 = str1.trim();
-			final_balance = Double.parseDouble(str1.substring(0, str1.length() - 1));
-		} catch (NumberFormatException | NullPointerException e) {
-			client.report("Not able to parse final balance correctly, string received: " + str1, false);
+			final_balance = client.getPaymentFromString(final_balance_str);
+		} catch (InternalException e) {
+			client.report(e.getMessage(), false);
 		}
 		if ((double) final_balance == (double) (initial_balance - amount))
 			client.report("Balance check result correct", true);
@@ -216,8 +225,7 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testTouchMeNotLogin() throws InternalException {
-		client.customInstallInstrumented("experitest.com.touchmenot/.LoginActivity");
-		client.launch("experitest.com.touchmenot/.LoginActivity", true, true);
+		client.customLaunchInstrument("experitest.com.touchmenot/.LoginActivity");
 		String csvUserName = null;
 		String csvPassword = null;
 		boolean failure = false;
@@ -261,8 +269,12 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testTouchMeNotPlay() throws InternalException {
-		client.customInstallInstrumented("experitest.com.touchmenot/.LoginActivity");
-		client.launch("experitest.com.touchmenot/.LoginActivity", true, true);
+		client.customLaunchInstrument("experitest.com.touchmenot/.LoginActivity");
+
+		if (client.isElementFound("NATIVE", "xpath=//*[@text='ALLOW']", 0))
+			client.click("NATIVE", "xpath=//*[@text='ALLOW']", 0, 1);
+		else if (client.isElementFound("NATIVE", "xpath=//*[@text='Allow']", 0))
+			client.click("NATIVE", "xpath=//*[@text='Allow']", 0, 1);
 
 		client.elementSendText("NATIVE", "hint=Username", 0, "Demo");
 		client.elementSendText("NATIVE", "hint=Re-enter Username", 0, "Demo");
@@ -284,12 +296,19 @@ public class AndroidSuite implements Runnable {
 		client.waitForElement("WEB", "text=Menu", 0, 10000);
 		client.click("WEB", "text=Menu", 0, 1);
 		String[] menuitems = { "Sports", "ESPN+", "Watch", "Listen", "Fantasy", "More" };
-		for (String s : menuitems) {
-			if (client.waitForElement("WEB", "text=" + s, 0, 10000))
-				client.click("WEB", "text=" + s, 0, 1);
-			else
-				client.report("Element not found: " + s, false);
+		StringBuilder failures = new StringBuilder();
+		boolean failed = false;
+		for (String menuitem : menuitems) {
+			if (client.waitForElement("WEB", "text=" + menuitem, 0, 10000))
+				client.click("WEB", "text=" + menuitem, 0, 1);
+			else {
+				client.report("Element not found: " + menuitem, false);
+				failed = true;
+				failures.append(menuitem + ",");
+			}
 		}
+		if (failed)
+			throw new InternalException(null, "Following elements not found: " + failures.toString(), null);
 	}
 
 	public void tearDown() {
@@ -297,5 +316,11 @@ public class AndroidSuite implements Runnable {
 		if (beReleased)
 			client.releaseDevice("", false, true, true);
 		client.releaseClient();
+	}
+
+	public void sendReportSummary(int run) {
+		FinalReporter finalReporter = FinalReporter.getInstance();
+		finalReporter.addRow(run, client.getConnDeviceName(), client.getDeviceProperty("device.sn"), testFuncMap.size(),
+				failuresMap);
 	}
 }

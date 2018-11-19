@@ -15,6 +15,7 @@ public class BaseTest {
 	final static private String test_name="all";
 	final static private String projectBaseDirectory = System.getProperty("user.dir");
 	final static private String reportsBase = "Run_" + System.currentTimeMillis();
+	final static private long duration = -1;
 	static private Properties props = null;
 
 	public static void loadProperties() {
@@ -58,6 +59,10 @@ public class BaseTest {
 
 	public static String getTestName() {
 		return props.getProperty("test_name", test_name);
+	}
+	
+	public static long getTestDuration() {
+		return Long.parseLong(props.getProperty("test_duration", ""+duration));
 	}
 
 	public static String getProjectbasedirectory() {
