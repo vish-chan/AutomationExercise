@@ -62,7 +62,7 @@ public class CustomClient extends Client {
 			super.install(app, false, true);
 		} catch (InternalException e) {
 			try {
-				super.install(app, true, false);
+				super.install(app, false, false);
 			} catch (InternalException e2) {
 				System.err.println("Unable to install app uninstrumented");
 			}
@@ -75,6 +75,16 @@ public class CustomClient extends Client {
 		} catch (InternalException e) {
 			System.err.println("Unable to launch app instrumented, reinstalling and trying again.");
 			customInstallInstrumented(app);
+			super.launch(app, true, true);
+		}
+	}
+	
+	public void customLaunchUnInstrument(String app) {
+		try {
+			super.launch(app, false, true);
+		} catch (InternalException e) {
+			System.err.println("Unable to launch app Uninstrumented, reinstalling and trying again.");
+			customInstallUninstrumented(app);
 			super.launch(app, true, true);
 		}
 	}
@@ -99,7 +109,7 @@ public class CustomClient extends Client {
 					super.report("Wifi not set, cannot change Wifi state", false);
 				}
 		} catch (InternalException e) {
-			super.report("Cannot check Wifi state", false);
+			super.report("Cannot check Wifi state", true);
 		}
 	}
 

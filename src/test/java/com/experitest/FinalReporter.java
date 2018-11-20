@@ -86,7 +86,7 @@ public class FinalReporter {
 	}
 	
 	public void printFinalTable() {
-		File f = new File(BaseTest.getProjectbasedirectory()+"\\"+BaseTest.getReportsbase()+"\\"+"final_report.csv");
+		File f = new File(BaseTest.getBaseDirectory()+"\\"+BaseTest.getReportsBaseDirectory()+"\\"+"final_report.csv");
 		FileWriter fw = null;
 		BufferedWriter bw = null;
 		try {

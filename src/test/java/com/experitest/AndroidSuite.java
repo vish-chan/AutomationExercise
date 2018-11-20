@@ -26,11 +26,13 @@ public class AndroidSuite implements Runnable {
 	Map<String, Method> testFuncMap = new HashMap<>();
 	Map<String, String> testAppMap = new HashMap<>();
 	Map<String, List<String>> failuresMap = new HashMap<String, List<String>>();
-	String[] testNames = { "Eribank Login", "Eribank Payment", "TouchMeNot Login", "TouchMeNot Play", "ESPN" };
+	String[] testNames = { "Eribank Login", "Eribank Payment", "TouchMeNot Login", "TouchMeNot Play", "ESPN Menu Text",
+			"ESPN Menu Click",
+			"Playstore Install", "Playstore Top Apps" };
 	String[] methodNames = { "testEribankLogin", "testEribankPayment", "testTouchMeNotLogin", "testTouchMeNotPlay",
-			"testESPN" };
+			"testESPNMenuText", "testESPNMenuClick", "testPlayStoreInstall", "testPlayStoreTopApps" };
 	String[] appPaths = { "applications\\eribank.apk", "applications\\eribank.apk", "applications\\TouchMeNot.apk",
-			"applications\\TouchMeNot.apk", null };
+			"applications\\TouchMeNot.apk", null, null, null, null };
 
 	public AndroidSuite(String devname, String host, int port, String projectBaseDirectory, String reportsBase) {
 		String test = BaseTest.getTestName();
@@ -47,10 +49,10 @@ public class AndroidSuite implements Runnable {
 		this.init(devname, host, port, projectBaseDirectory, reportsBase);
 	}
 
-	public void init(String devname, String host, int port, String projectBaseDirectory, String reportsbase) {
+	public void init(String devname, String host, int port, String baseDirectory, String reportsBaseDirectory) {
 		System.out.println("Init for device: " + devname);
 		client = new CustomClient(host, port, true);
-		client.setProjectBaseDirectory(projectBaseDirectory);
+		client.setProjectBaseDirectory(baseDirectory+"\\"+BaseTest.getProjectDirectory());
 		if (devname.equals("cloud")) {
 			devname = client.waitForDevice("@os='android' AND @added='false'", 30000);
 			beReleased = true;
@@ -60,7 +62,7 @@ public class AndroidSuite implements Runnable {
 		}
 		client.setConnDeviceName(devname);
 		client.openDevice();
-		this.reportsBase = projectBaseDirectory + "\\" + reportsbase + "\\" + devname.replaceAll("\\W", "_");
+		this.reportsBase = baseDirectory + "\\" + reportsBaseDirectory + "\\" + devname.replaceAll("\\W", "_");
 		try {
 			Files.createDirectories(Paths.get(reportsBase));
 		} catch (IOException e) {
@@ -70,8 +72,8 @@ public class AndroidSuite implements Runnable {
 
 	@Override
 	public void run() {
-		long test_duration = BaseTest.getTestDuration()*60*1000;
-		int i = 0, run=1;
+		long test_duration = BaseTest.getTestDuration() * 60 * 1000;
+		int i = 0, run = 1;
 		while (true) {
 			long start_time = System.currentTimeMillis();
 			for (String key : testFuncMap.keySet()) {
@@ -105,7 +107,7 @@ public class AndroidSuite implements Runnable {
 						 * client.getConnDeviceName(), "", "", e.getCause().getMessage());
 						 */
 						try {
-							// client.reboot(150000);
+							client.reboot(150000);
 							m.invoke(this);
 						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 								| InternalException e3) {
@@ -126,12 +128,12 @@ public class AndroidSuite implements Runnable {
 			}
 			sendReportSummary(run);
 			long end_time = System.currentTimeMillis();
-			test_duration = test_duration - (end_time-start_time);
-			if(test_duration <= 0)
+			test_duration = test_duration - (end_time - start_time);
+			if (test_duration <= 0)
 				break;
 			run++;
 		}
-		
+
 		tearDown();
 	}
 
@@ -290,25 +292,96 @@ public class AndroidSuite implements Runnable {
 		client.click("NATIVE", "text=Exit", 0, 1);
 	}
 
-	public void testESPN() throws InternalException {
+	public void testPlayStoreInstall() throws InternalException {
+		client.customSetNetworkConnection("wifi");
+		client.customLaunchUnInstrument("com.android.vending/.AssetBrowserActivity");
+		client.click("default", "app", 0, 1);
+		client.click("NATIVE", "xpath=//*[@text='INSTALL']", 0, 1);
+		client.click("NATIVE", "xpath=//*[@id='cancel_download']", 0, 1);
+
+	}
+
+	public void testPlayStoreTopApps() throws InternalException {
+		client.customSetNetworkConnection("wifi");
+		client.customLaunchUnInstrument("com.android.vending/.AssetBrowserActivity");
+		client.click("NATIVE", "xpath=//*[@contentDescription='Home, Top Charts']", 0, 1);
+		int i = 0, retries = 0, to_get_rank = 1;
+		while (true) {
+			if (client.isElementFound("NATIVE",
+					"xpath=//*[@id='play_card' and @width>0 and @height>0 and ./*[@height>0]] //*[@id='li_title']",
+					i)) {
+				String rank = client.elementGetText("NATIVE",
+						"xpath=//*[@id='play_card' and @width>0 and @height>0 and ./*[@height>0]] //*[@id='li_ranking']",
+						i);
+				if (rank != null) {
+					int irank = Integer.parseInt(rank);
+					if (to_get_rank == irank) {
+						String app_name = client.elementGetText("NATIVE",
+								"xpath=//*[@id='play_card' and @width>0 and @height>0 and ./*[@height>0]] //*[@id='li_title']",
+								i);
+						client.report("App no. "+to_get_rank+" is "+app_name, true);
+						i++;
+						to_get_rank++;
+					} else if (to_get_rank < irank) {
+						if (i == 0)
+							client.swipe("UP", 400, 100);
+						else
+							i--;
+					} else if (to_get_rank > irank) {
+						i++;
+					}
+				} else break;
+			} else {
+				client.swipe("DOWN", 400, 100);
+				i = 0;
+				retries++;
+			}
+			if (to_get_rank >= 11 || retries > 10)
+				break;
+		}
+		if(to_get_rank <= 10) {
+			throw new InternalException(null, "Unable to find all top 10 apps, found until "+(to_get_rank-1), null);
+		}
+	}
+
+	public void testESPNMenuText() throws InternalException {
 		client.customSetNetworkConnection("wifi");
 		client.launch("chrome:http://www.espn.com", true, false);
 		client.waitForElement("WEB", "text=Menu", 0, 10000);
 		client.click("WEB", "text=Menu", 0, 1);
-		String[] menuitems = { "Sports", "ESPN+", "Watch", "Listen", "Fantasy", "More" };
+		String[] menuitems = { "Search", "Sports", "ESPN+", "Watch", "Listen", "Fantasy", "More" };
 		StringBuilder failures = new StringBuilder();
 		boolean failed = false;
 		for (String menuitem : menuitems) {
-			if (client.waitForElement("WEB", "text=" + menuitem, 0, 10000))
+			if (!(client.waitForElement("WEB", "text=" + menuitem, 0, 10000))) {
+					client.report("Text not found: " + menuitem, false);
+					failed = true;
+					failures.append(menuitem + ",");
+			}
+		}
+		if (failed)
+			throw new InternalException(null, "Following elements not found: " + failures.toString(), null);
+	}
+	
+	public void testESPNMenuClick() throws InternalException {
+		client.customSetNetworkConnection("wifi");
+		client.launch("chrome:http://www.espn.com", true, false);
+		client.waitForElement("WEB", "text=Menu", 0, 10000);
+		client.click("WEB", "text=Menu", 0, 1);
+		String[] menuitems = { "Search", "Sports", "ESPN+", "Watch", "Listen", "Fantasy", "More" };
+		StringBuilder failures = new StringBuilder();
+		boolean failed = false;
+		for (String menuitem : menuitems) {
+			try {
 				client.click("WEB", "text=" + menuitem, 0, 1);
-			else {
-				client.report("Element not found: " + menuitem, false);
+			} catch (InternalException e) {
+				client.report("Unable to click: " + menuitem, false);
 				failed = true;
 				failures.append(menuitem + ",");
 			}
 		}
 		if (failed)
-			throw new InternalException(null, "Following elements not found: " + failures.toString(), null);
+			throw new InternalException(null, "Unable to click following elements: " + failures.toString(), null);
 	}
 
 	public void tearDown() {

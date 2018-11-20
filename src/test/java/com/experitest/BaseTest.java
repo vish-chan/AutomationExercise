@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -13,12 +15,18 @@ public class BaseTest {
 	final static private String os="all";
 	final static private String device_name="all";
 	final static private String test_name="all";
-	final static private String projectBaseDirectory = System.getProperty("user.dir");
+	final static private String baseDirectory = System.getProperty("user.dir");
+	final static private String projectDirectory = "Project";
 	final static private String reportsBase = "Run_" + System.currentTimeMillis();
 	final static private long duration = -1;
 	static private Properties props = null;
 
 	public static void loadProperties() {
+		try {
+			Files.createDirectories(Paths.get(baseDirectory));
+		} catch (IOException e) {
+			System.err.println("Couldn't create directory!");
+		}
 		props = new Properties();
 		File f = new File("test.properties");
 		InputStream is = null;
@@ -65,12 +73,16 @@ public class BaseTest {
 		return Long.parseLong(props.getProperty("test_duration", ""+duration));
 	}
 
-	public static String getProjectbasedirectory() {
-		return projectBaseDirectory;
+	public static String getBaseDirectory() {
+		return baseDirectory;
 	}
 
-	public static String getReportsbase() {
+	public static String getReportsBaseDirectory() {
 		return reportsBase;
+	}
+	
+	public static String getProjectDirectory() {
+		return props.getProperty("project_dir", projectDirectory);
 	}
 	
 	

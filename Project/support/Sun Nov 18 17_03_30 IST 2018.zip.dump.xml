@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?><nodes ignored="true" web="false">
+<properties>
+<property type="onScreen" value="false"/>
+<property type="visible" value="false"/>
+<property type="top" value="false"/>
+</properties>
+<children>
+<node h="1824" ignored="false" w="1200" web="false" x="0" y="0">
+<properties>
+<property type="class" value="com.android.internal.policy.impl.PhoneWindow$DecorView"/>
+<property type="knownSuperClass" value="android.widget.FrameLayout"/>
+<property type="backColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="0"/>
+<property type="width" value="1200"/>
+<property type="height" value="1824"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="1824" ignored="false" w="1200" web="false" x="0" y="0">
+<properties>
+<property type="class" value="android.widget.LinearLayout"/>
+<property type="knownSuperClass" value="android.widget.LinearLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="0"/>
+<property type="width" value="1200"/>
+<property type="height" value="1824"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="0" ignored="false" w="0" web="false" x="0" y="0">
+<properties>
+<property type="class" value="android.view.ViewStub"/>
+<property type="knownSuperClass" value="android.view.ViewStub"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="0"/>
+<property type="width" value="0"/>
+<property type="height" value="0"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="true"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="false"/>
+<property type="visible" value="false"/>
+</properties>
+<children/>
+</node>
+<node h="50" ignored="false" w="1200" web="false" x="0" y="50">
+<properties>
+<property type="class" value="android.widget.FrameLayout"/>
+<property type="knownSuperClass" value="android.widget.FrameLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="50"/>
+<property type="width" value="1200"/>
+<property type="height" value="50"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="44" ignored="false" w="1176" web="false" x="12" y="52">
+<properties>
+<property type="id" value="title"/>
+<property type="text" value="EriBank"/>
+<property type="class" value="android.widget.TextView"/>
+<property type="knownSuperClass" value="android.widget.TextView"/>
+<property type="textColor" value="0xFFFFFF"/>
+<property type="enabled" value="true"/>
+<property type="x" value="12"/>
+<property type="y" value="52"/>
+<property type="width" value="1176"/>
+<property type="height" value="44"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+<node h="1724" ignored="false" w="1200" web="false" x="0" y="100">
+<properties>
+<property type="id" value="content"/>
+<property type="class" value="android.widget.FrameLayout"/>
+<property type="knownSuperClass" value="android.widget.FrameLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="100"/>
+<property type="width" value="1200"/>
+<property type="height" value="1724"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="1724" ignored="false" w="1200" web="false" x="0" y="100">
+<properties>
+<property type="id" value="paymentHomeView"/>
+<property type="class" value="android.widget.LinearLayout"/>
+<property type="knownSuperClass" value="android.widget.LinearLayout"/>
+<property type="backColor" value="0xFFFFFF"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="100"/>
+<property type="width" value="1200"/>
+<property type="height" value="1724"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="1724" ignored="false" w="1200" web="false" x="0" y="100">
+<properties>
+<property type="id" value="scrollView1"/>
+<property type="class" value="android.widget.ScrollView"/>
+<property type="knownSuperClass" value="android.widget.ScrollView"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="100"/>
+<property type="width" value="1200"/>
+<property type="height" value="1724"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="991" ignored="false" w="1200" web="false" x="0" y="100">
+<properties>
+<property type="class" value="android.widget.LinearLayout"/>
+<property type="knownSuperClass" value="android.widget.LinearLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="100"/>
+<property type="width" value="1200"/>
+<property type="height" value="991"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="171" ignored="false" w="555" web="false" x="322" y="120">
+<properties>
+<property type="class" value="android.widget.ImageView"/>
+<property type="knownSuperClass" value="android.widget.ImageView"/>
+<property type="enabled" value="true"/>
+<property type="x" value="322"/>
+<property type="y" value="120"/>
+<property type="width" value="555"/>
+<property type="height" value="171"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="200" ignored="false" w="1200" web="false" x="0" y="311">
+<properties>
+<property type="class" value="android.widget.LinearLayout"/>
+<property type="knownSuperClass" value="android.widget.LinearLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="311"/>
+<property type="width" value="1200"/>
+<property type="height" value="200"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="200" ignored="false" w="1200" web="false" x="0" y="311">
+<properties>
+<property type="id" value="balanceWebView"/>
+<property type="class" value="android.webkit.WebView"/>
+<property type="knownSuperClass" value="android.webkit.WebView"/>
+<property type="focused" value="true"/>
+<property type="contentDescription" value="Web View"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="311"/>
+<property type="width" value="1200"/>
+<property type="height" value="200"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+<node h="96" ignored="false" w="400" web="false" x="400" y="531">
+<properties>
+<property type="id" value="makePaymentButton"/>
+<property type="text" value="Make Payment"/>
+<property type="class" value="android.widget.Button"/>
+<property type="knownSuperClass" value="android.widget.Button"/>
+<property type="textColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="400"/>
+<property type="y" value="531"/>
+<property type="width" value="400"/>
+<property type="height" value="96"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="96" ignored="false" w="400" web="false" x="400" y="647">
+<properties>
+<property type="id" value="mortageRequestButton"/>
+<property type="text" value="Mortgage Request"/>
+<property type="class" value="android.widget.Button"/>
+<property type="knownSuperClass" value="android.widget.Button"/>
+<property type="textColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="400"/>
+<property type="y" value="647"/>
+<property type="width" value="400"/>
+<property type="height" value="96"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="96" ignored="false" w="400" web="false" x="400" y="763">
+<properties>
+<property type="id" value="expenseReportButton"/>
+<property type="text" value="Expense Report"/>
+<property type="class" value="android.widget.Button"/>
+<property type="knownSuperClass" value="android.widget.Button"/>
+<property type="textColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="400"/>
+<property type="y" value="763"/>
+<property type="width" value="400"/>
+<property type="height" value="96"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="96" ignored="false" w="400" web="false" x="400" y="879">
+<properties>
+<property type="id" value="AdvancedActionsButton"/>
+<property type="text" value="Advanced Actions"/>
+<property type="class" value="android.widget.Button"/>
+<property type="knownSuperClass" value="android.widget.Button"/>
+<property type="textColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="400"/>
+<property type="y" value="879"/>
+<property type="width" value="400"/>
+<property type="height" value="96"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="96" ignored="false" w="400" web="false" x="400" y="995">
+<properties>
+<property type="id" value="logoutButton"/>
+<property type="text" value="Logout"/>
+<property type="class" value="android.widget.Button"/>
+<property type="knownSuperClass" value="android.widget.Button"/>
+<property type="textColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="400"/>
+<property type="y" value="995"/>
+<property type="width" value="400"/>
+<property type="height" value="96"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+</children>
+</node>
+</children>
+</node>
+</children>
+</node>
+</children>
+</node>
+</children>
+</node>
+<node h="200" ignored="false" w="1200" web="true" x="0" y="311">
+<properties>
+<property type="nodeName" value="document"/>
+<property type="x" value="0"/>
+<property type="y" value="311"/>
+<property type="width" value="1200"/>
+<property type="height" value="200"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+<property type="top" value="false"/>
+</properties>
+<children>
+<node h="214" ignored="false" w="1200" web="true" x="0" y="311">
+<properties>
+<property type="nodeName" value="HTML"/>
+<property type="x" value="0"/>
+<property type="y" value="311"/>
+<property type="width" value="1200"/>
+<property type="height" value="214"/>
+<property type="hidden" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+<property type="top" value="false"/>
+</properties>
+<children>
+<node h="156" ignored="false" w="1168" web="true" x="16" y="327">
+<properties>
+<property type="nodeName" value="BODY"/>
+<property type="focused" value="true"/>
+<property type="x" value="16"/>
+<property type="y" value="327"/>
+<property type="width" value="1168"/>
+<property type="height" value="156"/>
+<property type="hidden" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+<property type="top" value="false"/>
+</properties>
+<children>
+<node h="156" ignored="false" w="1168" web="true" x="16" y="327">
+<properties>
+<property type="nodeName" value="H1"/>
+<property type="text" value="Your balance is: 80.00$"/>
+<property type="align" value="center"/>
+<property type="x" value="16"/>
+<property type="y" value="327"/>
+<property type="width" value="1168"/>
+<property type="height" value="156"/>
+<property type="hidden" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+<property type="top" value="true"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+</children>
+</node>
+</children>
+</node>
+</children>
+</nodes>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><domain fixed="false" fullWindow="true" name="default">
+<obj text="Dot" version="1">
+<images enable="true">
+<image file="default\Dot.PNG" jump="1" mainColor="-1000000" max="0" min="0" scanner="Advance Similarity" similarity="99"/>
+</images>
+<text color="2147483647" enable="false" filter="false" ignoreCase="false" regexp="false" sensitivity="10" text=""/>
+<native aiIOS="" alIOS="gameview" class="experitest.com.touchmenot.GameView" classBB="" classIOS="" classWP="" contentDescription="" contentWP="" enable="false" enableBB="false" enableIOS="false" enableWP="false" hint="" id="gameview" method="xpath" methodBB="class" methodIOS="class" methodWP="class" nameWP="" placeholderIOS="" scriptIOS="" text="" textBB="" textIOS="" textWP="" value="//*[@id='gameview']" xpath="//*[@id='gameview']" xpathIOS="" xpathWP=""/>
+<web enable="false" method="" value=""/>
+</obj>
+<obj text="app" version="1">
+<images enable="true">
+<image file="default\app.PNG" jump="1" mainColor="-ca3e86" max="0" min="0" scanner="Advance Similarity" similarity="95"/>
+</images>
+<text color="2147483647" enable="false" filter="false" ignoreCase="false" regexp="false" sensitivity="10" text=""/>
+<native aiIOS="" alIOS="" class="" classBB="" classIOS="" classWP="" contentDescription="" contentWP="" enable="false" enableBB="false" enableIOS="false" enableWP="false" hint="" id="" method="class" methodBB="class" methodIOS="class" methodWP="class" nameWP="" placeholderIOS="" scriptIOS="" text="" textBB="" textIOS="" textWP="" value="" xpath="" xpathIOS="" xpathWP=""/>
+<web enable="false" method="" value=""/>
+</obj>
+<obj text="app_ios" version="1">
+<images enable="true">
+<image file="default\app_ios.PNG" jump="1" mainColor="-10110a" max="0" min="0" scanner="Advance Similarity" similarity="97"/>
+</images>
+<text color="2147483647" enable="false" filter="false" ignoreCase="false" regexp="false" sensitivity="10" text=""/>
+<native aiIOS="" alIOS="" class="" classBB="" classIOS="UIAView" classWP="" contentDescription="" contentWP="" enable="false" enableBB="false" enableIOS="true" enableWP="false" hint="" id="" method="class" methodBB="class" methodIOS="xpath" methodWP="class" nameWP="" placeholderIOS="" scriptIOS="" text="" textBB="" textIOS="1, Stickman Hook, Swing like a Spider" textWP="" value="" xpath="" xpathIOS="//*[@text='1, Stickman Hook, Swing like a Spider']" xpathWP=""/>
+<web enable="false" method="" value=""/>
+</obj>
+</domain>

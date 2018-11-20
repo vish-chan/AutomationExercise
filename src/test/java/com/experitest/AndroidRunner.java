@@ -40,13 +40,13 @@ public class AndroidRunner extends BaseTest {
 			for (String android_device : android_devices) {
 				System.out.println("Starting test for device " + device);
 				AndroidSuite as = new AndroidSuite(android_device, BaseTest.getHost(), BaseTest.getPort(),
-						BaseTest.getProjectbasedirectory(), BaseTest.getReportsbase());
+						BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
 				es.execute(as);
 			}
 		} else {
 			System.out.println("Starting test for device " + device);
 			AndroidSuite as = new AndroidSuite(device, BaseTest.getHost(), BaseTest.getPort(),
-					BaseTest.getProjectbasedirectory(), BaseTest.getReportsbase());
+					BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
 			es.execute(as);
 		}
 		try {

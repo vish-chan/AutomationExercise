@@ -41,14 +41,14 @@ public class IOSRunner extends BaseTest {
 
 				System.out.println("Starting test for device " + device);
 				IOSSuite ios = new IOSSuite(ios_device, BaseTest.getHost(), BaseTest.getPort(),
-						BaseTest.getProjectbasedirectory(), BaseTest.getReportsbase());
+						BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
 				es.execute(ios);
 
 			}
 		} else {
 			System.out.println("Starting test for device " + device);
 			IOSSuite ios = new IOSSuite(device, BaseTest.getHost(), BaseTest.getPort(),
-					BaseTest.getProjectbasedirectory(), BaseTest.getReportsbase());
+					BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
 			es.execute(ios);
 		}
 		try {

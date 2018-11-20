@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?><nodes ignored="true" web="false">
+<properties>
+<property type="onScreen" value="false"/>
+<property type="visible" value="false"/>
+<property type="top" value="false"/>
+</properties>
+<children>
+<node h="2160" ignored="false" w="1080" web="false" x="0" y="0">
+<properties>
+<property type="class" value="com.android.internal.policy.DecorView"/>
+<property type="knownSuperClass" value="android.widget.FrameLayout"/>
+<property type="backColor" value="0xFAFAFA"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="0"/>
+<property type="width" value="1080"/>
+<property type="height" value="2160"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="2016" ignored="false" w="1080" web="false" x="0" y="0">
+<properties>
+<property type="class" value="android.widget.LinearLayout"/>
+<property type="knownSuperClass" value="android.widget.LinearLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="0"/>
+<property type="width" value="1080"/>
+<property type="height" value="2016"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="0" ignored="false" w="0" web="false" x="0" y="0">
+<properties>
+<property type="id" value="action_mode_bar_stub"/>
+<property type="class" value="android.view.ViewStub"/>
+<property type="knownSuperClass" value="android.view.ViewStub"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="0"/>
+<property type="width" value="0"/>
+<property type="height" value="0"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="true"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="false"/>
+<property type="visible" value="false"/>
+</properties>
+<children/>
+</node>
+<node h="1944" ignored="false" w="1080" web="false" x="0" y="72">
+<properties>
+<property type="class" value="android.widget.FrameLayout"/>
+<property type="knownSuperClass" value="android.widget.FrameLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="72"/>
+<property type="width" value="1080"/>
+<property type="height" value="1944"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="1944" ignored="false" w="1080" web="false" x="0" y="72">
+<properties>
+<property type="id" value="decor_content_parent"/>
+<property type="class" value="android.support.v7.widget.ActionBarOverlayLayout"/>
+<property type="knownSuperClass" value="android.view.ViewGroup"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="72"/>
+<property type="width" value="1080"/>
+<property type="height" value="1944"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="1776" ignored="false" w="1080" web="false" x="0" y="240">
+<properties>
+<property type="id" value="content"/>
+<property type="class" value="android.support.v7.widget.ContentFrameLayout"/>
+<property type="knownSuperClass" value="android.widget.FrameLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="240"/>
+<property type="width" value="1080"/>
+<property type="height" value="1776"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="1776" ignored="false" w="1080" web="false" x="0" y="240">
+<properties>
+<property type="class" value="android.support.constraint.ConstraintLayout"/>
+<property type="knownSuperClass" value="android.view.ViewGroup"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="240"/>
+<property type="width" value="1080"/>
+<property type="height" value="1776"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="169" ignored="false" w="960" web="false" x="60" y="300">
+<properties>
+<property type="id" value="usernamelayout"/>
+<property type="class" value="android.support.design.widget.TextInputLayout"/>
+<property type="knownSuperClass" value="android.widget.LinearLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="60"/>
+<property type="y" value="300"/>
+<property type="width" value="960"/>
+<property type="height" value="169"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="136" ignored="false" w="960" web="false" x="60" y="333">
+<properties>
+<property type="class" value="android.widget.FrameLayout"/>
+<property type="knownSuperClass" value="android.widget.FrameLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="60"/>
+<property type="y" value="333"/>
+<property type="width" value="960"/>
+<property type="height" value="136"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="136" ignored="false" w="960" web="false" x="60" y="333">
+<properties>
+<property type="id" value="usernametext"/>
+<property type="text" value="Vishal"/>
+<property type="hint" value="Username"/>
+<property type="class" value="android.support.design.widget.TextInputEditText"/>
+<property type="knownSuperClass" value="android.widget.EditText"/>
+<property type="focused" value="true"/>
+<property type="textColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="60"/>
+<property type="y" value="333"/>
+<property type="width" value="960"/>
+<property type="height" value="136"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+</children>
+</node>
+<node h="169" ignored="false" w="960" web="false" x="60" y="529">
+<properties>
+<property type="id" value="re_usernamelayout"/>
+<property type="class" value="android.support.design.widget.TextInputLayout"/>
+<property type="knownSuperClass" value="android.widget.LinearLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="60"/>
+<property type="y" value="529"/>
+<property type="width" value="960"/>
+<property type="height" value="169"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="136" ignored="false" w="960" web="false" x="60" y="562">
+<properties>
+<property type="class" value="android.widget.FrameLayout"/>
+<property type="knownSuperClass" value="android.widget.FrameLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="60"/>
+<property type="y" value="562"/>
+<property type="width" value="960"/>
+<property type="height" value="136"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="136" ignored="false" w="960" web="false" x="60" y="562">
+<properties>
+<property type="id" value="re_usernametext"/>
+<property type="text" value=""/>
+<property type="hint" value="Re-enter Username"/>
+<property type="class" value="android.support.design.widget.TextInputEditText"/>
+<property type="knownSuperClass" value="android.widget.EditText"/>
+<property type="textColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="60"/>
+<property type="y" value="562"/>
+<property type="width" value="960"/>
+<property type="height" value="136"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+</children>
+</node>
+<node h="144" ignored="false" w="264" web="false" x="408" y="722">
+<properties>
+<property type="id" value="loginbtn"/>
+<property type="text" value="Login"/>
+<property type="class" value="android.support.v7.widget.AppCompatButton"/>
+<property type="knownSuperClass" value="android.widget.Button"/>
+<property type="textColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="408"/>
+<property type="y" value="722"/>
+<property type="width" value="264"/>
+<property type="height" value="144"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="252" ignored="false" w="1080" web="false" x="0" y="1764">
+<properties>
+<property type="id" value="extrainfo"/>
+<property type="class" value="android.widget.RelativeLayout"/>
+<property type="knownSuperClass" value="android.widget.RelativeLayout"/>
+<property type="backColor" value="0x008577"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="1764"/>
+<property type="width" value="1080"/>
+<property type="height" value="252"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="57" ignored="false" w="488" web="false" x="3" y="1767">
+<properties>
+<property type="id" value="gps"/>
+<property type="text" value="GPS Coordinates (lat/lon):"/>
+<property type="class" value="android.support.v7.widget.AppCompatTextView"/>
+<property type="knownSuperClass" value="android.widget.TextView"/>
+<property type="textColor" value="0xFFFFFF"/>
+<property type="enabled" value="true"/>
+<property type="x" value="3"/>
+<property type="y" value="1767"/>
+<property type="width" value="488"/>
+<property type="height" value="57"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="parentHidden" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="57" ignored="false" w="390" web="false" x="3" y="1830">
+<properties>
+<property type="id" value="wifi"/>
+<property type="text" value="Wifi: &lt;unknown ssid&gt;"/>
+<property type="class" value="android.support.v7.widget.AppCompatTextView"/>
+<property type="knownSuperClass" value="android.widget.TextView"/>
+<property type="textColor" value="0xFFFFFF"/>
+<property type="enabled" value="true"/>
+<property type="x" value="3"/>
+<property type="y" value="1830"/>
+<property type="width" value="390"/>
+<property type="height" value="57"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="parentHidden" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="57" ignored="false" w="271" web="false" x="3" y="1893">
+<properties>
+<property type="id" value="usdtoshekel"/>
+<property type="text" value="USD to Shekel:"/>
+<property type="class" value="android.support.v7.widget.AppCompatTextView"/>
+<property type="knownSuperClass" value="android.widget.TextView"/>
+<property type="textColor" value="0xFFFFFF"/>
+<property type="enabled" value="true"/>
+<property type="x" value="3"/>
+<property type="y" value="1893"/>
+<property type="width" value="271"/>
+<property type="height" value="57"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="parentHidden" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="57" ignored="false" w="104" web="false" x="3" y="1956">
+<properties>
+<property type="id" value="time"/>
+<property type="text" value="Time:"/>
+<property type="class" value="android.support.v7.widget.AppCompatTextView"/>
+<property type="knownSuperClass" value="android.widget.TextView"/>
+<property type="textColor" value="0xFFFFFF"/>
+<property type="enabled" value="true"/>
+<property type="x" value="3"/>
+<property type="y" value="1956"/>
+<property type="width" value="104"/>
+<property type="height" value="57"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="parentHidden" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+</children>
+</node>
+</children>
+</node>
+<node h="168" ignored="false" w="1080" web="false" x="0" y="72">
+<properties>
+<property type="id" value="action_bar_container"/>
+<property type="class" value="android.support.v7.widget.ActionBarContainer"/>
+<property type="knownSuperClass" value="android.widget.FrameLayout"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="72"/>
+<property type="width" value="1080"/>
+<property type="height" value="168"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="168" ignored="false" w="1080" web="false" x="0" y="72">
+<properties>
+<property type="id" value="action_bar"/>
+<property type="class" value="android.support.v7.widget.Toolbar"/>
+<property type="knownSuperClass" value="android.view.ViewGroup"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="72"/>
+<property type="width" value="1080"/>
+<property type="height" value="168"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children>
+<node h="81" ignored="false" w="343" web="false" x="48" y="115">
+<properties>
+<property type="text" value="TouchMeNot"/>
+<property type="class" value="android.support.v7.widget.AppCompatTextView"/>
+<property type="knownSuperClass" value="android.widget.TextView"/>
+<property type="textColor" value="0xFFFFFF"/>
+<property type="enabled" value="true"/>
+<property type="x" value="48"/>
+<property type="y" value="115"/>
+<property type="width" value="343"/>
+<property type="height" value="81"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="168" ignored="false" w="0" web="false" x="1080" y="72">
+<properties>
+<property type="class" value="android.support.v7.widget.ActionMenuView"/>
+<property type="knownSuperClass" value="android.view.ViewGroup"/>
+<property type="enabled" value="true"/>
+<property type="x" value="1080"/>
+<property type="y" value="72"/>
+<property type="width" value="0"/>
+<property type="height" value="168"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="true"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="false"/>
+<property type="visible" value="false"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+<node h="0" ignored="false" w="0" web="false" x="0" y="72">
+<properties>
+<property type="id" value="action_context_bar"/>
+<property type="class" value="android.support.v7.widget.ActionBarContextView"/>
+<property type="knownSuperClass" value="android.view.ViewGroup"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="72"/>
+<property type="width" value="0"/>
+<property type="height" value="0"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="true"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="false"/>
+<property type="visible" value="false"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+</children>
+</node>
+</children>
+</node>
+</children>
+</node>
+<node h="144" ignored="false" w="1080" web="false" x="0" y="2016">
+<properties>
+<property type="id" value="navigationBarBackground"/>
+<property type="class" value="android.view.View"/>
+<property type="backColor" value="0x000000"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="2016"/>
+<property type="width" value="1080"/>
+<property type="height" value="144"/>
+<property type="hidden" value="true"/>
+<property type="busy" value="false"/>
+<property type="top" value="false"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+<node h="72" ignored="false" w="1080" web="false" x="0" y="0">
+<properties>
+<property type="id" value="statusBarBackground"/>
+<property type="class" value="android.view.View"/>
+<property type="backColor" value="0x00574B"/>
+<property type="enabled" value="true"/>
+<property type="x" value="0"/>
+<property type="y" value="0"/>
+<property type="width" value="1080"/>
+<property type="height" value="72"/>
+<property type="hidden" value="false"/>
+<property type="busy" value="false"/>
+<property type="top" value="true"/>
+<property type="onScreen" value="true"/>
+<property type="visible" value="true"/>
+</properties>
+<children/>
+</node>
+</children>
+</node>
+</children>
+</nodes>
