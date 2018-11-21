@@ -27,7 +27,14 @@ public class AndroidRunner extends BaseTest {
 	public void test() {
 		String device = BaseTest.getDeviceName();
 		ExecutorService es = Executors.newCachedThreadPool();
-		if (device.equals("all")) {
+		if (device.equals("cloud")) {
+			for (int i = 0; i < BaseTest.getCloudAndroid(); i++) {
+				System.out.println("Starting test for device " + device);
+				AndroidSuite as = new AndroidSuite(device, BaseTest.getHost(), BaseTest.getPort(),
+						BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
+				es.execute(as);
+			}
+		} else {
 			String conn_dev = client.getConnectedDevices();
 			String[] devices = conn_dev.split("\n");
 			List<String> android_devices = new ArrayList<>();
@@ -38,24 +45,21 @@ public class AndroidRunner extends BaseTest {
 			}
 			System.out.println("Total android devices found: " + android_devices.size());
 			for (String android_device : android_devices) {
-				System.out.println("Starting test for device " + device);
-				AndroidSuite as = new AndroidSuite(android_device, BaseTest.getHost(), BaseTest.getPort(),
-						BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
-				es.execute(as);
+				if (device.equals("all") || device.equals(android_device)) {
+					System.out.println("Starting test for device " + device);
+					AndroidSuite as = new AndroidSuite(android_device, BaseTest.getHost(), BaseTest.getPort(),
+							BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
+					es.execute(as);
+				}
 			}
-		} else {
-			System.out.println("Starting test for device " + device);
-			AndroidSuite as = new AndroidSuite(device, BaseTest.getHost(), BaseTest.getPort(),
-					BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
-			es.execute(as);
 		}
 		try {
 			es.shutdown();
 			long duration = BaseTest.getTestDuration();
-			if(duration<0)
+			if (duration < 0)
 				duration = 30;
 			else
-				duration = duration+10;
+				duration = duration + 10;
 			es.awaitTermination(duration, TimeUnit.MINUTES);
 		} catch (InterruptedException e) {
 			fail("Some threads couldn't complete execution");

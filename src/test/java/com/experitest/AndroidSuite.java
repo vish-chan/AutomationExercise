@@ -54,7 +54,7 @@ public class AndroidSuite implements Runnable {
 		client = new CustomClient(host, port, true);
 		client.setProjectBaseDirectory(baseDirectory+"\\"+BaseTest.getProjectDirectory());
 		if (devname.equals("cloud")) {
-			devname = client.waitForDevice("@os='android' AND @added='false'", 30000);
+			devname = client.waitForDevice("@os='android'", 50000);
 			beReleased = true;
 			System.out.println("Init for device: " + devname);
 		} else {
@@ -62,6 +62,7 @@ public class AndroidSuite implements Runnable {
 		}
 		client.setConnDeviceName(devname);
 		client.openDevice();
+		client.customSetNetworkConnection("wifi");
 		this.reportsBase = baseDirectory + "\\" + reportsBaseDirectory + "\\" + devname.replaceAll("\\W", "_");
 		try {
 			Files.createDirectories(Paths.get(reportsBase));
@@ -138,7 +139,6 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testEribankLogin() throws InternalException {
-		// client.customInstallInstrumented("com.experitest.ExperiBank/.LoginActivity");
 		client.customLaunchInstrument("com.experitest.ExperiBank/.LoginActivity");
 		String csvUserName = null;
 		String csvPassword = null;
@@ -293,7 +293,6 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testPlayStoreInstall() throws InternalException {
-		client.customSetNetworkConnection("wifi");
 		client.customLaunchUnInstrument("com.android.vending/.AssetBrowserActivity");
 		client.click("default", "app", 0, 1);
 		client.click("NATIVE", "xpath=//*[@text='INSTALL']", 0, 1);
@@ -302,7 +301,6 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testPlayStoreTopApps() throws InternalException {
-		client.customSetNetworkConnection("wifi");
 		client.customLaunchUnInstrument("com.android.vending/.AssetBrowserActivity");
 		client.click("NATIVE", "xpath=//*[@contentDescription='Home, Top Charts']", 0, 1);
 		int i = 0, retries = 0, to_get_rank = 1;
@@ -345,7 +343,6 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testESPNMenuText() throws InternalException {
-		client.customSetNetworkConnection("wifi");
 		client.launch("chrome:http://www.espn.com", true, false);
 		client.waitForElement("WEB", "text=Menu", 0, 10000);
 		client.click("WEB", "text=Menu", 0, 1);
@@ -364,7 +361,6 @@ public class AndroidSuite implements Runnable {
 	}
 	
 	public void testESPNMenuClick() throws InternalException {
-		client.customSetNetworkConnection("wifi");
 		client.launch("chrome:http://www.espn.com", true, false);
 		client.waitForElement("WEB", "text=Menu", 0, 10000);
 		client.click("WEB", "text=Menu", 0, 1);
@@ -383,17 +379,18 @@ public class AndroidSuite implements Runnable {
 		if (failed)
 			throw new InternalException(null, "Unable to click following elements: " + failures.toString(), null);
 	}
-
-	public void tearDown() {
-		client.closeDevice();
-		if (beReleased)
-			client.releaseDevice("", false, true, true);
-		client.releaseClient();
-	}
-
+	
 	public void sendReportSummary(int run) {
 		FinalReporter finalReporter = FinalReporter.getInstance();
 		finalReporter.addRow(run, client.getConnDeviceName(), client.getDeviceProperty("device.sn"), testFuncMap.size(),
 				failuresMap);
 	}
+
+	public void tearDown() {
+		client.closeDevice();
+		if (beReleased)
+			client.releaseDevice("", false, false, true);
+		client.releaseClient();
+	}
+	
 }

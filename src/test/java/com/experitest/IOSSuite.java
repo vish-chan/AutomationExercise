@@ -50,13 +50,15 @@ public class IOSSuite implements Runnable {
 		client = new CustomClient(host, port, true);
 		client.setProjectBaseDirectory(baseDirectory+"\\"+BaseTest.getProjectDirectory());
 		if (devname.equals("cloud")) {
-			devname = client.waitForDevice("@os='ios' AND @added='false'", 30000);
+			devname = client.waitForDevice("@os='ios'", 50000);
 			beReleased = true;
 			System.out.println("Init for device: " + devname);
 		} else
 			client.setDevice(devname);
 		client.setConnDeviceName(devname);
 		client.openDevice();
+		client.customSetNetworkConnection("wifi");
+
 		this.reportsBase = baseDirectory + "\\" + reportsBaseDirectory + "\\" + devname.replaceAll("\\W", "_");
 		try {
 			Files.createDirectories(Paths.get(reportsBase));
@@ -227,8 +229,36 @@ public class IOSSuite implements Runnable {
 		}
 	}
 
+	public void testPlayStoreInstall() throws InternalException {
+		client.customLaunchUnInstrument("com.apple.AppStore");
+		client.click("NATIVE", "xpath=//*[@text='Games']", 0, 1);
+		if (!client.swipeWhileNotFound("Down", 592, 3215, "default", "app_ios", 0, 0, 6, true)) {
+			throw new InternalException(null, "Unable to find app for installation", null);
+		}
+		client.sleep(1000);
+		client.click("NATIVE", "xpath=//*[@text='GET']", 0, 1);
+        client.click("NATIVE", "xpath=//*[@text='Install']", 0, 1);
+        client.click("NATIVE", "xpath=//*[@text='Cancel']", 0, 1);
+	}
+
+	public void testPlayStoreTopApps() throws InternalException {
+		client.customLaunchUnInstrument("com.apple.AppStore");
+		client.click("NATIVE", "xpath=//*[@text='Games']", 0, 1);
+		if (!client.swipeWhileNotFound("Down", 500, 2000, "NATIVE",
+				"xpath=//*[@text='See All' and ./parent::*[@text='Top Free']]", 0, 1000, 5, true)) {
+			throw new InternalException(null, "Unable to find top free section", null);
+		}
+		for (int i = 0; i < 10; i++) {
+			String app_name = client.elementGetText("NATIVE",
+					"xpath=((//*[@class='UIAView' and ./parent::*[@class='UIAView' and ./parent::*[@class='UIAView' and ./parent::*[@class='UIAView']]]]/*/*[@class='UIACollectionView'])[2]/*[@text and @class='UIAView' and ./*[@text]])",
+					i);
+			if(app_name==null || app_name.equals(""))
+				throw new InternalException(null, "Unable to find top app no. "+i, null);
+			client.report("App no. "+(i+1)+" is "+app_name, true);
+		}
+	}
+	
 	public void testESPNMenuText() throws InternalException {
-		client.customSetNetworkConnection("wifi");
 		client.launch("chrome:http://www.espn.com", true, false);
 		client.waitForElement("WEB", "text=Menu", 0, 10000);
 		client.click("WEB", "text=Menu", 0, 1);
@@ -246,39 +276,7 @@ public class IOSSuite implements Runnable {
 			throw new InternalException(null, "Following elements not found: " + failures.toString(), null);
 	}
 
-	public void testPlayStoreInstall() throws InternalException {
-		client.customSetNetworkConnection("wifi");
-		client.customLaunchUnInstrument("com.apple.AppStore");
-		client.click("NATIVE", "xpath=//*[@text='Games']", 0, 1);
-		if (!client.swipeWhileNotFound("Down", 592, 3215, "default", "app_ios", 0, 0, 6, true)) {
-			throw new InternalException(null, "Unable to find app for installation", null);
-		}
-		client.sleep(1000);
-		client.click("NATIVE", "xpath=//*[@text='GET']", 0, 1);
-        client.click("NATIVE", "xpath=//*[@text='Install']", 0, 1);
-        client.click("NATIVE", "xpath=//*[@text='Cancel']", 0, 1);
-	}
-
-	public void testPlayStoreTopApps() throws InternalException {
-		client.customSetNetworkConnection("wifi");
-		client.customLaunchUnInstrument("com.apple.AppStore");
-		client.click("NATIVE", "xpath=//*[@text='Games']", 0, 1);
-		if (!client.swipeWhileNotFound("Down", 500, 2000, "NATIVE",
-				"xpath=//*[@text='See All' and ./parent::*[@text='Top Free']]", 0, 1000, 5, true)) {
-			throw new InternalException(null, "Unable to find top free section", null);
-		}
-		for (int i = 0; i < 10; i++) {
-			String app_name = client.elementGetText("NATIVE",
-					"xpath=((//*[@class='UIAView' and ./parent::*[@class='UIAView' and ./parent::*[@class='UIAView' and ./parent::*[@class='UIAView']]]]/*/*[@class='UIACollectionView'])[2]/*[@text and @class='UIAView' and ./*[@text]])",
-					i);
-			if(app_name==null || app_name.equals(""))
-				throw new InternalException(null, "Unable to find top app no. "+i, null);
-			client.report("App no. "+(i+1)+" is "+app_name, true);
-		}
-	}
-
 	public void testESPNMenuClick() throws InternalException {
-		client.customSetNetworkConnection("wifi");
 		client.launch("chrome:http://www.espn.com", true, false);
 		client.waitForElement("WEB", "text=Menu", 0, 10000);
 		client.click("WEB", "text=Menu", 0, 1);
@@ -307,7 +305,7 @@ public class IOSSuite implements Runnable {
 	public void tearDown() {
 		client.closeDevice();
 		if (beReleased)
-			client.releaseDevice("", false, true, true);
+			client.releaseDevice("", false, false, true);
 		client.releaseClient();
 	}
 }

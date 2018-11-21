@@ -27,7 +27,14 @@ public class IOSRunner extends BaseTest {
 	public void test() {
 		String device = BaseTest.getDeviceName();
 		ExecutorService es = Executors.newCachedThreadPool();
-		if (device.equals("all")) {
+		if (device.equals("cloud")) {
+			for (int i = 0; i < BaseTest.getCloudiOS(); i++) {
+				System.out.println("Starting test for device " + device);
+				IOSSuite ios = new IOSSuite(device, BaseTest.getHost(), BaseTest.getPort(), BaseTest.getBaseDirectory(),
+						BaseTest.getReportsBaseDirectory());
+				es.execute(ios);
+			}
+		} else {
 			String conn_dev = client.getConnectedDevices();
 			String[] devices = conn_dev.split("\n");
 			List<String> ios_devices = new ArrayList<>();
@@ -38,26 +45,23 @@ public class IOSRunner extends BaseTest {
 			}
 			System.out.println("Total IOS devices found: " + ios_devices.size());
 			for (String ios_device : ios_devices) {
-
-				System.out.println("Starting test for device " + device);
-				IOSSuite ios = new IOSSuite(ios_device, BaseTest.getHost(), BaseTest.getPort(),
-						BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
-				es.execute(ios);
+				if (device.equals("all") || device.equals(ios_device)) {
+					System.out.println("Starting test for device " + device);
+					IOSSuite ios = new IOSSuite(ios_device, BaseTest.getHost(), BaseTest.getPort(),
+							BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
+					es.execute(ios);
+				}
 
 			}
-		} else {
-			System.out.println("Starting test for device " + device);
-			IOSSuite ios = new IOSSuite(device, BaseTest.getHost(), BaseTest.getPort(),
-					BaseTest.getBaseDirectory(), BaseTest.getReportsBaseDirectory());
-			es.execute(ios);
+
 		}
 		try {
 			es.shutdown();
 			long duration = BaseTest.getTestDuration();
-			if(duration<0)
+			if (duration < 0)
 				duration = 30;
 			else
-				duration = duration+10;
+				duration = duration + 10;
 			es.awaitTermination(duration, TimeUnit.MINUTES);
 		} catch (InterruptedException e) {
 			fail("Some threads couldn't complete execution");

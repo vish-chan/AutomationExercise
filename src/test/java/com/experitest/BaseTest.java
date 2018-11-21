@@ -20,6 +20,8 @@ public class BaseTest {
 	final static private String reportsBase = "Run_" + System.currentTimeMillis();
 	final static private long duration = -1;
 	static private Properties props = null;
+	final static private int cloud_android = 1;
+	final static private int cloud_ios = 1;
 
 	public static void loadProperties() {
 		try {
@@ -83,6 +85,14 @@ public class BaseTest {
 	
 	public static String getProjectDirectory() {
 		return props.getProperty("project_dir", projectDirectory);
+	}
+	
+	public static int getCloudAndroid() {
+		return Integer.parseInt(props.getProperty("cloud_android", ""+cloud_android));
+	}
+	
+	public static int getCloudiOS() {
+		return Integer.parseInt(props.getProperty("cloud_ios", ""+cloud_ios));
 	}
 	
 	
