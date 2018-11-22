@@ -26,8 +26,10 @@ public class IOSSuite implements Runnable {
 	boolean beReleased = false;
 	Map<String, Method> testFuncMap = new HashMap<>();
 	Map<String, String> testAppMap = new HashMap<>();
-	String[] testNames = { "Eribank Login", "Eribank Payment", "ESPN Menu Text", "ESPN Menu Click", "Playstore Install", "Playstore Top Apps" };
-	String[] methodNames = { "testEribankLogin", "testEribankPayment", "testESPNMenuText", "testESPNMenuClick",  "testPlayStoreInstall", "testPlayStoreTopApps" };
+	String[] testNames = { "Eribank Login", "Eribank Payment", "ESPN Menu Text", "ESPN Menu Click", "Playstore Install",
+			"Playstore Top Apps" };
+	String[] methodNames = { "testEribankLogin", "testEribankPayment", "testESPNMenuText", "testESPNMenuClick",
+			"testPlayStoreInstall", "testPlayStoreTopApps" };
 	String[] appPaths = { "applications\\eribank.apk", "applications\\eribank.apk", null, null, null, null };
 
 	public IOSSuite(String devname, String host, int port, String projectBaseDirectory, String reportsbase) {
@@ -48,13 +50,24 @@ public class IOSSuite implements Runnable {
 	public void init(String devname, String host, int port, String baseDirectory, String reportsBaseDirectory) {
 		System.out.println("Init for device: " + devname);
 		client = new CustomClient(host, port, true);
-		client.setProjectBaseDirectory(baseDirectory+"\\"+BaseTest.getProjectDirectory());
+		client.setProjectBaseDirectory(baseDirectory + "\\" + BaseTest.getProjectDirectory());
 		if (devname.equals("cloud")) {
-			devname = client.waitForDevice("@os='ios'", 50000);
-			beReleased = true;
-			System.out.println("Init for device: " + devname);
-		} else
-			client.setDevice(devname);
+			try {
+				devname = client.waitForDevice("@os='ios' and @category='PHONE'", 50000);
+				beReleased = true;
+				System.out.println("Init for device: " + devname);
+			} catch (InternalException e) {
+				System.err.println("Wait for device returned with error " + e.getMessage());
+				return;
+			}
+		} else {
+			try {
+				client.setDevice(devname);
+			} catch (InternalException e) {
+				System.err.println("setDevice returned with error " + e.getMessage());
+				return;
+			}
+		}
 		client.setConnDeviceName(devname);
 		client.openDevice();
 		client.customSetNetworkConnection("wifi");
@@ -69,6 +82,8 @@ public class IOSSuite implements Runnable {
 
 	@Override
 	public void run() {
+		if(client.getConnDeviceName()==null)
+			return;
 		long test_duration = BaseTest.getTestDuration() * 60 * 1000;
 		int i = 0, run = 1;
 		while (true) {
@@ -237,8 +252,8 @@ public class IOSSuite implements Runnable {
 		}
 		client.sleep(1000);
 		client.click("NATIVE", "xpath=//*[@text='GET']", 0, 1);
-        client.click("NATIVE", "xpath=//*[@text='Install']", 0, 1);
-        client.click("NATIVE", "xpath=//*[@text='Cancel']", 0, 1);
+		client.click("NATIVE", "xpath=//*[@text='Install']", 0, 1);
+		client.click("NATIVE", "xpath=//*[@text='Cancel']", 0, 1);
 	}
 
 	public void testPlayStoreTopApps() throws InternalException {
@@ -252,12 +267,12 @@ public class IOSSuite implements Runnable {
 			String app_name = client.elementGetText("NATIVE",
 					"xpath=((//*[@class='UIAView' and ./parent::*[@class='UIAView' and ./parent::*[@class='UIAView' and ./parent::*[@class='UIAView']]]]/*/*[@class='UIACollectionView'])[2]/*[@text and @class='UIAView' and ./*[@text]])",
 					i);
-			if(app_name==null || app_name.equals(""))
-				throw new InternalException(null, "Unable to find top app no. "+i, null);
-			client.report("App no. "+(i+1)+" is "+app_name, true);
+			if (app_name == null || app_name.equals(""))
+				throw new InternalException(null, "Unable to find top app no. " + i, null);
+			client.report("App no. " + (i + 1) + " is " + app_name, true);
 		}
 	}
-	
+
 	public void testESPNMenuText() throws InternalException {
 		client.launch("chrome:http://www.espn.com", true, false);
 		client.waitForElement("WEB", "text=Menu", 0, 10000);

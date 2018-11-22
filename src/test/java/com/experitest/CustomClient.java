@@ -7,7 +7,7 @@ import com.experitest.client.Client;
 import com.experitest.client.InternalException;
 
 public class CustomClient extends Client {
-	String connDeviceName;
+	String connDeviceName = null;
 
 	public String getConnDeviceName() {
 		return connDeviceName;

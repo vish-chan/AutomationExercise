@@ -27,8 +27,7 @@ public class AndroidSuite implements Runnable {
 	Map<String, String> testAppMap = new HashMap<>();
 	Map<String, List<String>> failuresMap = new HashMap<String, List<String>>();
 	String[] testNames = { "Eribank Login", "Eribank Payment", "TouchMeNot Login", "TouchMeNot Play", "ESPN Menu Text",
-			"ESPN Menu Click",
-			"Playstore Install", "Playstore Top Apps" };
+			"ESPN Menu Click", "Playstore Install", "Playstore Top Apps" };
 	String[] methodNames = { "testEribankLogin", "testEribankPayment", "testTouchMeNotLogin", "testTouchMeNotPlay",
 			"testESPNMenuText", "testESPNMenuClick", "testPlayStoreInstall", "testPlayStoreTopApps" };
 	String[] appPaths = { "applications\\eribank.apk", "applications\\eribank.apk", "applications\\TouchMeNot.apk",
@@ -52,13 +51,23 @@ public class AndroidSuite implements Runnable {
 	public void init(String devname, String host, int port, String baseDirectory, String reportsBaseDirectory) {
 		System.out.println("Init for device: " + devname);
 		client = new CustomClient(host, port, true);
-		client.setProjectBaseDirectory(baseDirectory+"\\"+BaseTest.getProjectDirectory());
+		client.setProjectBaseDirectory(baseDirectory + "\\" + BaseTest.getProjectDirectory());
 		if (devname.equals("cloud")) {
-			devname = client.waitForDevice("@os='android'", 50000);
-			beReleased = true;
-			System.out.println("Init for device: " + devname);
+			try {
+				devname = client.waitForDevice("@os='android'and @category='PHONE'", 50000);
+				beReleased = true;
+				System.out.println("Init for device: " + devname);
+			} catch (InternalException e) {
+				System.err.println("Wait for device returned with error " + e.getMessage());
+				return;
+			}
 		} else {
-			client.setDevice(devname);
+			try {
+				client.setDevice(devname);
+			} catch (InternalException e) {
+				System.err.println("setDevice returned with error " + e.getMessage());
+				return;
+			}
 		}
 		client.setConnDeviceName(devname);
 		client.openDevice();
@@ -73,6 +82,8 @@ public class AndroidSuite implements Runnable {
 
 	@Override
 	public void run() {
+		if (client.getConnDeviceName() == null)
+			return;
 		long test_duration = BaseTest.getTestDuration() * 60 * 1000;
 		int i = 0, run = 1;
 		while (true) {
@@ -317,7 +328,7 @@ public class AndroidSuite implements Runnable {
 						String app_name = client.elementGetText("NATIVE",
 								"xpath=//*[@id='play_card' and @width>0 and @height>0 and ./*[@height>0]] //*[@id='li_title']",
 								i);
-						client.report("App no. "+to_get_rank+" is "+app_name, true);
+						client.report("App no. " + to_get_rank + " is " + app_name, true);
 						i++;
 						to_get_rank++;
 					} else if (to_get_rank < irank) {
@@ -328,7 +339,8 @@ public class AndroidSuite implements Runnable {
 					} else if (to_get_rank > irank) {
 						i++;
 					}
-				} else break;
+				} else
+					break;
 			} else {
 				client.swipe("DOWN", 400, 100);
 				i = 0;
@@ -337,8 +349,8 @@ public class AndroidSuite implements Runnable {
 			if (to_get_rank >= 11 || retries > 10)
 				break;
 		}
-		if(to_get_rank <= 10) {
-			throw new InternalException(null, "Unable to find all top 10 apps, found until "+(to_get_rank-1), null);
+		if (to_get_rank <= 10) {
+			throw new InternalException(null, "Unable to find all top 10 apps, found until " + (to_get_rank - 1), null);
 		}
 	}
 
@@ -351,15 +363,15 @@ public class AndroidSuite implements Runnable {
 		boolean failed = false;
 		for (String menuitem : menuitems) {
 			if (!(client.waitForElement("WEB", "text=" + menuitem, 0, 10000))) {
-					client.report("Text not found: " + menuitem, false);
-					failed = true;
-					failures.append(menuitem + ",");
+				client.report("Text not found: " + menuitem, false);
+				failed = true;
+				failures.append(menuitem + ",");
 			}
 		}
 		if (failed)
 			throw new InternalException(null, "Following elements not found: " + failures.toString(), null);
 	}
-	
+
 	public void testESPNMenuClick() throws InternalException {
 		client.launch("chrome:http://www.espn.com", true, false);
 		client.waitForElement("WEB", "text=Menu", 0, 10000);
@@ -379,7 +391,7 @@ public class AndroidSuite implements Runnable {
 		if (failed)
 			throw new InternalException(null, "Unable to click following elements: " + failures.toString(), null);
 	}
-	
+
 	public void sendReportSummary(int run) {
 		FinalReporter finalReporter = FinalReporter.getInstance();
 		finalReporter.addRow(run, client.getConnDeviceName(), client.getDeviceProperty("device.sn"), testFuncMap.size(),
@@ -392,5 +404,5 @@ public class AndroidSuite implements Runnable {
 			client.releaseDevice("", false, false, true);
 		client.releaseClient();
 	}
-	
+
 }
