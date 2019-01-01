@@ -1,4 +1,4 @@
-package com.experitest;
+package com.experitest.training;
 
 import com.experitest.client.*;
 
@@ -14,13 +14,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
  */
 public class IOSSuite implements Runnable {
 
-	private CustomClient client = null;
+	private Client client = null;
+	private ClientHelper helper = null;
+	private int isGrid = 0;
+	final String deviceQuery = "@os='ios' and @category='PHONE'";
 	Map<String, List<String>> failuresMap = new HashMap<String, List<String>>();
 	String reportsBase;
 	boolean beReleased = false;
@@ -33,6 +37,17 @@ public class IOSSuite implements Runnable {
 	String[] appPaths = { "applications\\eribank.apk", "applications\\eribank.apk", null, null, null, null };
 
 	public IOSSuite(String devname, String host, int port, String projectBaseDirectory, String reportsbase) {
+		initTestMap();
+		this.init(devname, host, port, projectBaseDirectory, reportsbase);
+	}
+	
+	public IOSSuite(String username, String password, String Project, String URL, String projectBaseDirectory,
+			String reportsBase, int duration) {
+		initTestMap();
+		init(username, password, Project, URL, projectBaseDirectory, reportsBase, duration);
+	}
+	
+	private void initTestMap() {
 		String test = BaseTest.getTestName();
 		for (int i = 0; i < testNames.length; i++) {
 			if (test.equals("all") || test.equals(testNames[i])) {
@@ -44,12 +59,12 @@ public class IOSSuite implements Runnable {
 				}
 			}
 		}
-		this.init(devname, host, port, projectBaseDirectory, reportsbase);
 	}
 
 	public void init(String devname, String host, int port, String baseDirectory, String reportsBaseDirectory) {
 		System.out.println("Init for device: " + devname);
-		client = new CustomClient(host, port, true);
+		client = new Client(host, port, true);
+		helper = new ClientHelper(client);
 		client.setProjectBaseDirectory(baseDirectory + "\\" + BaseTest.getProjectDirectory());
 		if (devname.equals("cloud")) {
 			try {
@@ -68,10 +83,29 @@ public class IOSSuite implements Runnable {
 				return;
 			}
 		}
-		client.setConnDeviceName(devname);
+		helper.setConnDeviceName(devname);
 		client.openDevice();
-		client.customSetNetworkConnection("wifi");
+		helper.customSetNetworkConnection("wifi");
 
+		this.reportsBase = baseDirectory + "\\" + reportsBaseDirectory + "\\" + devname.replaceAll("\\W", "_");
+		try {
+			Files.createDirectories(Paths.get(reportsBase));
+		} catch (IOException e) {
+			System.err.println("Couldn't create directory!");
+		}
+	}
+	
+	public void init(String username, String password, String Project, String URL, String baseDirectory,
+			String reportsBaseDirectory, int duration) {
+		System.out.println("Init for iOS device on grid: " + URL);
+		isGrid = 1;
+		GridClient gridClient = new GridClient(username, password, Project, URL);
+		client = gridClient.lockDeviceForExecution(BaseTest.getTestName(), deviceQuery, true, duration,
+				TimeUnit.MINUTES.toMillis(2));
+		helper = new ClientHelper(client);
+		String devname = client.getDeviceProperty("device.name");
+		helper.setConnDeviceName(devname);
+		helper.customSetNetworkConnection("wifi");
 		this.reportsBase = baseDirectory + "\\" + reportsBaseDirectory + "\\" + devname.replaceAll("\\W", "_");
 		try {
 			Files.createDirectories(Paths.get(reportsBase));
@@ -82,7 +116,7 @@ public class IOSSuite implements Runnable {
 
 	@Override
 	public void run() {
-		if(client.getConnDeviceName()==null)
+		if(helper.getConnDeviceName()==null)
 			return;
 		long test_duration = BaseTest.getTestDuration() * 60 * 1000;
 		int i = 0, run = 1;
@@ -151,7 +185,7 @@ public class IOSSuite implements Runnable {
 	}
 
 	public void testEribankLogin() throws InternalException {
-		client.customLaunchInstrument("com.experitest.ExperiBank");
+		helper.customLaunchInstrument("com.experitest.ExperiBank");
 
 		String csvUserName = null;
 		String csvPassword = null;
@@ -200,7 +234,7 @@ public class IOSSuite implements Runnable {
 	}
 
 	public void testEribankPayment() throws InternalException {
-		client.customLaunchInstrument("com.experitest.ExperiBank");
+		helper.customLaunchInstrument("com.experitest.ExperiBank");
 
 		client.elementSendText("NATIVE", "xpath=//*[@placeholder='Username']", 0, "company");
 		client.elementSendText("NATIVE", "xpath=//*[@placeholder='Password']", 0, "company");
@@ -212,7 +246,7 @@ public class IOSSuite implements Runnable {
 				150);
 		Double initial_balance = 0D;
 		try {
-			initial_balance = client.getPaymentFromString(initial_balance_str);
+			initial_balance = helper.getPaymentFromString(initial_balance_str);
 		} catch (InternalException e) {
 			client.report(e.getMessage(), false);
 		}
@@ -231,7 +265,7 @@ public class IOSSuite implements Runnable {
 				150);
 		Double final_balance = 0D;
 		try {
-			final_balance = client.getPaymentFromString(final_balance_str);
+			final_balance = helper.getPaymentFromString(final_balance_str);
 		} catch (InternalException e) {
 			client.report(e.getMessage(), false);
 		}
@@ -245,7 +279,7 @@ public class IOSSuite implements Runnable {
 	}
 
 	public void testPlayStoreInstall() throws InternalException {
-		client.customLaunchUnInstrument("com.apple.AppStore");
+		helper.customLaunchUnInstrument("com.apple.AppStore");
 		client.click("NATIVE", "xpath=//*[@text='Games']", 0, 1);
 		if (!client.swipeWhileNotFound("Down", 592, 3215, "default", "app_ios", 0, 0, 6, true)) {
 			throw new InternalException(null, "Unable to find app for installation", null);
@@ -257,7 +291,7 @@ public class IOSSuite implements Runnable {
 	}
 
 	public void testPlayStoreTopApps() throws InternalException {
-		client.customLaunchUnInstrument("com.apple.AppStore");
+		helper.customLaunchUnInstrument("com.apple.AppStore");
 		client.click("NATIVE", "xpath=//*[@text='Games']", 0, 1);
 		if (!client.swipeWhileNotFound("Down", 500, 2000, "NATIVE",
 				"xpath=//*[@text='See All' and ./parent::*[@text='Top Free']]", 0, 1000, 5, true)) {
@@ -313,14 +347,18 @@ public class IOSSuite implements Runnable {
 
 	public void sendReportSummary(int run) {
 		FinalReporter finalReporter = FinalReporter.getInstance();
-		finalReporter.addRow(run, client.getConnDeviceName(), client.getDeviceProperty("device.sn"), testFuncMap.size(),
+		finalReporter.addRow(run, helper.getConnDeviceName(), client.getDeviceProperty("device.sn"), testFuncMap.size(),
 				failuresMap);
 	}
 
 	public void tearDown() {
-		client.closeDevice();
-		if (beReleased)
-			client.releaseDevice("", false, false, true);
-		client.releaseClient();
+		if (isGrid == 1) {
+			client.releaseClient();
+		} else {
+			client.closeDevice();
+			if (beReleased)
+				client.releaseDevice("", false, false, true);
+			client.releaseClient();
+		}
 	}
 }

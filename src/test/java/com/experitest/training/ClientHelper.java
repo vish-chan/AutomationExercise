@@ -1,4 +1,4 @@
-package com.experitest;
+package com.experitest.training;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,9 +6,14 @@ import java.util.regex.Pattern;
 import com.experitest.client.Client;
 import com.experitest.client.InternalException;
 
-public class CustomClient extends Client {
+public class ClientHelper {
+	
+	Client client;
 	String connDeviceName = null;
 
+	public ClientHelper(Client c) {
+		client = c;
+	}
 	public String getConnDeviceName() {
 		return connDeviceName;
 	}
@@ -17,20 +22,12 @@ public class CustomClient extends Client {
 		this.connDeviceName = connDeviceName;
 	}
 
-	public CustomClient(String host, int port) {
-		super(host, port);
-	}
-
-	public CustomClient(String host, int port, boolean useSessionID) {
-		super(host, port, useSessionID);
-	}
-
 	public void customClick(String zone, String element, int index, int clickCount, String zipDestination,
 			String applicationPath) {
 		try {
-			super.click(zone, element, index, clickCount);
+			client.click(zone, element, index, clickCount);
 		} catch (InternalException e) {
-			super.collectSupportData(zipDestination, applicationPath, connDeviceName, "click error", "click to work",
+			client.collectSupportData(zipDestination, applicationPath, connDeviceName, "click error", "click to work",
 					e.getMessage());
 		}
 	}
@@ -38,19 +35,19 @@ public class CustomClient extends Client {
 	public void customElementSendText(String zone, String element, int index, String text, String zipDestination,
 			String applicationPath) {
 		try {
-			super.elementSendText(zone, element, index, text);
+			client.elementSendText(zone, element, index, text);
 		} catch (InternalException e) {
-			super.collectSupportData(zipDestination, applicationPath, connDeviceName, "send text error",
+			client.collectSupportData(zipDestination, applicationPath, connDeviceName, "send text error",
 					"send text experted to work", e.getMessage());
 		}
 	}
 
 	public void customInstallInstrumented(String app) {
 		try {
-			super.install(app, true, true);
+			client.install(app, true, true);
 		} catch (InternalException e) {
 			try {
-				super.install(app, true, false);
+				client.install(app, true, false);
 			} catch (InternalException e2) {
 				System.err.println("Unable to install app instrumented");
 			}
@@ -59,10 +56,10 @@ public class CustomClient extends Client {
 
 	public void customInstallUninstrumented(String app) {
 		try {
-			super.install(app, false, true);
+			client.install(app, false, true);
 		} catch (InternalException e) {
 			try {
-				super.install(app, false, false);
+				client.install(app, false, false);
 			} catch (InternalException e2) {
 				System.err.println("Unable to install app uninstrumented");
 			}
@@ -71,30 +68,30 @@ public class CustomClient extends Client {
 
 	public void customLaunchInstrument(String app) {
 		try {
-			super.launch(app, true, true);
+			client.launch(app, true, true);
 		} catch (InternalException e) {
 			System.err.println("Unable to launch app instrumented, reinstalling and trying again.");
 			customInstallInstrumented(app);
-			super.launch(app, true, true);
+			client.launch(app, true, true);
 		}
 	}
 	
 	public void customLaunchUnInstrument(String app) {
 		try {
-			super.launch(app, false, true);
+			client.launch(app, false, true);
 		} catch (InternalException e) {
 			System.err.println("Unable to launch app Uninstrumented, reinstalling and trying again.");
 			customInstallUninstrumented(app);
-			super.launch(app, true, true);
+			client.launch(app, true, true);
 		}
 	}
 
 	public boolean customWaitForElement(String zone, String element, int index, int timeout, String zipDestination,
 			String applicationPath) {
 		try {
-			return super.waitForElement(zone, element, index, timeout);
+			return client.waitForElement(zone, element, index, timeout);
 		} catch (InternalException e) {
-			super.collectSupportData(zipDestination, applicationPath, connDeviceName, "waitForElement error",
+			client.collectSupportData(zipDestination, applicationPath, connDeviceName, "waitForElement error",
 					"element expected to appear", e.getMessage());
 			return false;
 		}
@@ -102,14 +99,14 @@ public class CustomClient extends Client {
 
 	public void customSetNetworkConnection(String connection) {
 		try {
-			if (!super.getNetworkConnection(connection))
+			if (!client.getNetworkConnection(connection))
 				try {
-					super.setNetworkConnection(connection, true);
+					client.setNetworkConnection(connection, true);
 				} catch (InternalException e) {
-					super.report("Wifi not set, cannot change Wifi state", false);
+					client.report("Wifi not set, cannot change Wifi state", false);
 				}
 		} catch (InternalException e) {
-			super.report("Cannot check Wifi state", true);
+			client.report("Cannot check Wifi state", true);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package com.experitest;
+package com.experitest.training;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
+import com.experitest.client.Client;
+import com.experitest.client.GridClient;
 import com.experitest.client.InternalException;
 
 /**
@@ -20,9 +23,12 @@ import com.experitest.client.InternalException;
  */
 public class AndroidSuite implements Runnable {
 
-	private CustomClient client = null;
+	private Client client = null;
+	private ClientHelper helper = null;
+	private int isGrid = 0;
 	String reportsBase;
 	boolean beReleased = false;
+	final String deviceQuery = "@os='android' and @category='PHONE'";
 	Map<String, Method> testFuncMap = new HashMap<>();
 	Map<String, String> testAppMap = new HashMap<>();
 	Map<String, List<String>> failuresMap = new HashMap<String, List<String>>();
@@ -33,7 +39,18 @@ public class AndroidSuite implements Runnable {
 	String[] appPaths = { "applications\\eribank.apk", "applications\\eribank.apk", "applications\\TouchMeNot.apk",
 			"applications\\TouchMeNot.apk", null, null, null, null };
 
+	public AndroidSuite(String username, String password, String Project, String URL, String projectBaseDirectory,
+			String reportsBase, int duration) {
+		initTestMap();
+		init(username, password, Project, URL, projectBaseDirectory, reportsBase, duration);
+	}
+
 	public AndroidSuite(String devname, String host, int port, String projectBaseDirectory, String reportsBase) {
+		initTestMap();
+		this.init(devname, host, port, projectBaseDirectory, reportsBase);
+	}
+
+	private void initTestMap() {
 		String test = BaseTest.getTestName();
 		for (int i = 0; i < testNames.length; i++) {
 			if (test.equals("all") || test.equals(testNames[i])) {
@@ -45,12 +62,12 @@ public class AndroidSuite implements Runnable {
 				}
 			}
 		}
-		this.init(devname, host, port, projectBaseDirectory, reportsBase);
 	}
 
 	public void init(String devname, String host, int port, String baseDirectory, String reportsBaseDirectory) {
 		System.out.println("Init for device: " + devname);
-		client = new CustomClient(host, port, true);
+		client = new Client(host, port, true);
+		helper = new ClientHelper(client);
 		client.setProjectBaseDirectory(baseDirectory + "\\" + BaseTest.getProjectDirectory());
 		if (devname.equals("cloud")) {
 			try {
@@ -69,9 +86,28 @@ public class AndroidSuite implements Runnable {
 				return;
 			}
 		}
-		client.setConnDeviceName(devname);
+		helper.setConnDeviceName(devname);
 		client.openDevice();
-		client.customSetNetworkConnection("wifi");
+		helper.customSetNetworkConnection("wifi");
+		this.reportsBase = baseDirectory + "\\" + reportsBaseDirectory + "\\" + devname.replaceAll("\\W", "_");
+		try {
+			Files.createDirectories(Paths.get(reportsBase));
+		} catch (IOException e) {
+			System.err.println("Couldn't create directory!");
+		}
+	}
+
+	public void init(String username, String password, String Project, String URL, String baseDirectory,
+			String reportsBaseDirectory, int duration) {
+		System.out.println("Init for Android device on grid: " + URL);
+		isGrid = 1;
+		GridClient gridClient = new GridClient(username, password, Project, URL);
+		client = gridClient.lockDeviceForExecution(BaseTest.getTestName(), deviceQuery, true, duration,
+				TimeUnit.MINUTES.toMillis(2));
+		helper = new ClientHelper(client);
+		String devname = client.getDeviceProperty("device.name");
+		helper.setConnDeviceName(devname);
+		helper.customSetNetworkConnection("wifi");
 		this.reportsBase = baseDirectory + "\\" + reportsBaseDirectory + "\\" + devname.replaceAll("\\W", "_");
 		try {
 			Files.createDirectories(Paths.get(reportsBase));
@@ -82,7 +118,7 @@ public class AndroidSuite implements Runnable {
 
 	@Override
 	public void run() {
-		if (client.getConnDeviceName() == null)
+		if (helper.getConnDeviceName() == null)
 			return;
 		long test_duration = BaseTest.getTestDuration() * 60 * 1000;
 		int i = 0, run = 1;
@@ -102,8 +138,8 @@ public class AndroidSuite implements Runnable {
 					/*
 					 * client.collectSupportData(this.reportsBase+"\\test"+i,
 					 * BaseTest.getProjectbasedirectory() +
-					 * "\\" + testAppMap.get(key), client.getConnDeviceName(), "", "",
-					 * e.getCause().getMessage());
+					 * "\\" + testAppMap.get(key), client.getConnDeviceName(), "", "
+					 * ", e.getCause().getMessage());
 					 */
 					try {
 						m.invoke(this);
@@ -114,9 +150,10 @@ public class AndroidSuite implements Runnable {
 						failuresMap.put(key, l);
 						System.out.println(failuresMap.get(key));
 						/*
-						 * client.collectSupportData(this.reportsBase+"\\test"+i,
-						 * BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key),
-						 * client.getConnDeviceName(), "", "", e.getCause().getMessage());
+						 * client.collectSupportData(this.reportsBase+"\\test"+
+						 * i, BaseTest.getProjectbasedirectory() + "\\" +
+						 * testAppMap.get(key), client.getConnDeviceName(), "",
+						 * "", e.getCause().getMessage());
 						 */
 						try {
 							client.reboot(150000);
@@ -128,9 +165,11 @@ public class AndroidSuite implements Runnable {
 							failuresMap.put(key, l);
 							System.out.println(failuresMap.get(key));
 							/*
-							 * client.collectSupportData(this.reportsBase+"\\test"+i,
-							 * BaseTest.getProjectbasedirectory() + "\\" + testAppMap.get(key),
-							 * client.getConnDeviceName(), "", "", e.getCause().getMessage());
+							 * client.collectSupportData(this.reportsBase+
+							 * "\\test"+i, BaseTest.getProjectbasedirectory() +
+							 * "\\" + testAppMap.get(key),
+							 * client.getConnDeviceName(), "", "",
+							 * e.getCause().getMessage());
 							 */
 						}
 					}
@@ -145,12 +184,11 @@ public class AndroidSuite implements Runnable {
 				break;
 			run++;
 		}
-
 		tearDown();
 	}
 
 	public void testEribankLogin() throws InternalException {
-		client.customLaunchInstrument("com.experitest.ExperiBank/.LoginActivity");
+		helper.customLaunchInstrument("com.experitest.ExperiBank/.LoginActivity");
 		String csvUserName = null;
 		String csvPassword = null;
 		Scanner inputStream = null;
@@ -198,7 +236,7 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testEribankPayment() throws InternalException {
-		client.customLaunchInstrument("com.experitest.ExperiBank/.LoginActivity");
+		helper.customLaunchInstrument("com.experitest.ExperiBank/.LoginActivity");
 		client.elementSendText("NATIVE", "hint=Username", 0, "company");
 		client.elementSendText("NATIVE", "hint=Password", 0, "company");
 		client.click("NATIVE", "text=Login", 0, 1);
@@ -207,7 +245,7 @@ public class AndroidSuite implements Runnable {
 		String initial_balance_str = client.getTextIn("NATIVE", "text=Make Payment", 0, "TEXT", "Up", 0, 200);
 		Double initial_balance = 0D;
 		try {
-			initial_balance = client.getPaymentFromString(initial_balance_str);
+			initial_balance = helper.getPaymentFromString(initial_balance_str);
 		} catch (InternalException e) {
 			client.report(e.getMessage(), false);
 		}
@@ -225,7 +263,7 @@ public class AndroidSuite implements Runnable {
 		String final_balance_str = client.getTextIn("NATIVE", "text=Make Payment", 0, "TEXT", "Up", 0, 200);
 		Double final_balance = 0D;
 		try {
-			final_balance = client.getPaymentFromString(final_balance_str);
+			final_balance = helper.getPaymentFromString(final_balance_str);
 		} catch (InternalException e) {
 			client.report(e.getMessage(), false);
 		}
@@ -238,7 +276,7 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testTouchMeNotLogin() throws InternalException {
-		client.customLaunchInstrument("experitest.com.touchmenot/.LoginActivity");
+		helper.customLaunchInstrument("experitest.com.touchmenot/.LoginActivity");
 		String csvUserName = null;
 		String csvPassword = null;
 		boolean failure = false;
@@ -282,7 +320,7 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testTouchMeNotPlay() throws InternalException {
-		client.customLaunchInstrument("experitest.com.touchmenot/.LoginActivity");
+		helper.customLaunchInstrument("experitest.com.touchmenot/.LoginActivity");
 
 		if (client.isElementFound("NATIVE", "xpath=//*[@text='ALLOW']", 0))
 			client.click("NATIVE", "xpath=//*[@text='ALLOW']", 0, 1);
@@ -304,7 +342,7 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testPlayStoreInstall() throws InternalException {
-		client.customLaunchUnInstrument("com.android.vending/.AssetBrowserActivity");
+		helper.customLaunchUnInstrument("com.android.vending/.AssetBrowserActivity");
 		client.click("default", "app", 0, 1);
 		client.click("NATIVE", "xpath=//*[@text='INSTALL']", 0, 1);
 		client.click("NATIVE", "xpath=//*[@id='cancel_download']", 0, 1);
@@ -312,7 +350,7 @@ public class AndroidSuite implements Runnable {
 	}
 
 	public void testPlayStoreTopApps() throws InternalException {
-		client.customLaunchUnInstrument("com.android.vending/.AssetBrowserActivity");
+		helper.customLaunchUnInstrument("com.android.vending/.AssetBrowserActivity");
 		client.click("NATIVE", "xpath=//*[@contentDescription='Home, Top Charts']", 0, 1);
 		int i = 0, retries = 0, to_get_rank = 1;
 		while (true) {
@@ -394,15 +432,19 @@ public class AndroidSuite implements Runnable {
 
 	public void sendReportSummary(int run) {
 		FinalReporter finalReporter = FinalReporter.getInstance();
-		finalReporter.addRow(run, client.getConnDeviceName(), client.getDeviceProperty("device.sn"), testFuncMap.size(),
+		finalReporter.addRow(run, helper.getConnDeviceName(), client.getDeviceProperty("device.sn"), testFuncMap.size(),
 				failuresMap);
 	}
 
 	public void tearDown() {
-		client.closeDevice();
-		if (beReleased)
-			client.releaseDevice("", false, false, true);
-		client.releaseClient();
+		if (isGrid == 1) {
+			client.releaseClient();
+		} else {
+			client.closeDevice();
+			if (beReleased)
+				client.releaseDevice("", false, false, true);
+			client.releaseClient();
+		}
 	}
 
 }

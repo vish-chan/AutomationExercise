@@ -1,4 +1,4 @@
-package com.experitest;
+package com.experitest.training;
 
 import java.io.BufferedWriter;
 import java.io.File;

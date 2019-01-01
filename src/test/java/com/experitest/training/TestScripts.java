@@ -1,4 +1,4 @@
-package com.experitest;
+package com.experitest.training;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -1,4 +1,4 @@
-package com.experitest;
+package com.experitest.training;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,10 +10,15 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 public class BaseTest {
+	final static private String username = "vishal";
+	final static private String password = "Aa123456";
+	final static private String url = "https://sales.experitest.com";
 	final static private String host = "localhost";
 	final static private int port = 8889;
 	final static private String os="all";
-	final static private String device_name="all";
+	final static private String android_device_name="all";
+	final static private String ios_device_name="all";
+	final static private String grid="0";
 	final static private String test_name="all";
 	final static private String baseDirectory = System.getProperty("user.dir");
 	final static private String projectDirectory = "Project";
@@ -50,6 +55,18 @@ public class BaseTest {
 			System.out.println(k+":"+props.getProperty(k));
 		}
 	}
+	
+	public static String getUsername() {
+		return props.getProperty("username", username);
+	}
+	
+	public static String getPassword() {
+		return props.getProperty("password", password);
+	}
+	
+	public static String getURL() {
+		return props.getProperty("url", url);
+	}
 
 	public static String getHost() {
 		return props.getProperty("host", host);
@@ -63,8 +80,12 @@ public class BaseTest {
 		return props.getProperty("os", os);
 	}
 
-	public static String getDeviceName() {
-		return props.getProperty("device_name", device_name);
+	public static String getAndroidDeviceName() {
+		return props.getProperty("device_name", android_device_name);
+	}
+	
+	public static String getiOSDeviceName() {
+		return props.getProperty("device_name", ios_device_name);
 	}
 
 	public static String getTestName() {
@@ -95,5 +116,7 @@ public class BaseTest {
 		return Integer.parseInt(props.getProperty("cloud_ios", ""+cloud_ios));
 	}
 	
-	
+	public static int getGrid() {
+		return Integer.parseInt(props.getProperty("grid", grid));
+	}
 }
